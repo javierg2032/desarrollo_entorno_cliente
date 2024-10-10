@@ -26,15 +26,9 @@ do {
     }
   } else if (respuesta != "FIN") {
     console.log("<br><br> ERROR:Opción no valida <br><br>");
+    confirm("La opción introducida no es valida, intentalo de nuevo");
   }
 } while (respuesta != "FIN");
 
 document.getElementById("pila").innerHTML="La pila final es: " + myArrayFIFO;
 document.getElementById("tamanio").innerHTML="El tamaño de la pila final es: " + myArrayFIFO.length;
-
-/*document.write("<br>Mostramos la pila:");
-for (let i = 0; i < myArrayFIFO.length; i++) {
-  document.write("<br>" + myArrayFIFO[i]);
-}
-document.write("<br>Longitud de la pila: ");
-document.write("<br>"+myArrayFIFO.length)*/
