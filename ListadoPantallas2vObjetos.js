@@ -21,6 +21,7 @@ for (let i = 0; i < lineas.length; i++) {
     tiempoRespuesta: null
   };
 
+  
   for (let j = 1; j < partes.length; j++) {
     if (partes[j].includes("€") || partes[j].includes("$")) {
       producto.precio = parseFloat(partes[j].replace(",", "."));
