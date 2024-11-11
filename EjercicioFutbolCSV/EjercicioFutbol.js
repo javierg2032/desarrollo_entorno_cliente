@@ -211,6 +211,10 @@ document
       // Mostrar los datos por consola
       console.log("Equipos completos por género:", equipos);
       console.log("Reservas por género:", reservas);
+      console.log(
+        "Reservas por genero y puesto:",
+        datosPorGeneroYPorPuesto
+      );
     } catch (error) {
       console.error("Error al procesar el archivo:", error);
     }
