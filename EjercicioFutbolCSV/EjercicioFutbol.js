@@ -1,8 +1,6 @@
 /*Tengo un documento CSV, (Nombre, Masculino O Femenino, Apellido, Puesto en el equipo, 
 Equipo asignado), debo eliminar los duplicados y separar los datos dependiendo del genero*/
 
-
-
 // Función para leer el archivo CSV que selecciono
 async function leerArchivo(file) {
   return new Promise((resolve, reject) => {
@@ -79,11 +77,17 @@ function separarPorPuesto(datos) {
         case "Defensa":
           separacion[categoriaGenero].defensa.push(jugador);
           break;
+        default:
+          // En caso de una posición inválida, simplemente ignoramos o mostramos un mensaje
+          console.error(
+            "ERROR: La posición "+puesto+" del jugador/a " + jugador.nombre+" "+jugador.apellido + " no es válida"
+          );
+          break;
       }
     }
   });
 
-  return separacion; // Devuelvo el objeto ya separado por género y puesto
+  return separacion; // Devuelvo el objeto ya separado por género y puestoF
 }
 
 // Función para crear equipos completos y gestionar las reservas
@@ -164,4 +168,3 @@ document
       console.error("Error al procesar el archivo:", error);
     }
   });
-
