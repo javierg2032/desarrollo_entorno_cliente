@@ -7,6 +7,11 @@
   margin: auto auto;
 }
 
+p #hijos{
+  background-color: rgb(145, 255, 209);
+  color: rgb(77, 77, 77);
+}
+
 p #padre {
   background-color: rgb(145, 145, 255);
   color: rgb(77, 77, 77);
@@ -16,7 +21,7 @@ p #madre {
   color: rgb(77, 77, 77);
 }
 p #nombre {
-  background-color: rgb(167, 255, 207);
+  background-color: rgb(239, 255, 167);
   color: rgb(77, 77, 77);
 }
 p #abueloP {
