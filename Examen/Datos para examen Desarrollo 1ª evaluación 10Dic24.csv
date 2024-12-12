@@ -1,0 +1,66 @@
+﻿Cliente y dirección;;;;;
+Ana Rodríguez – Calle de Gran Vía, 28, Madrid;;;;;
+Carlos Pérez – Avenida de la Constitución, 15, Pinto;;;;;
+Laura Fernández – Calle de Alcalá, 101, Madrid;;;;;
+David García – Paseo de la Castellana, 220, Madrid;;;;;
+María López – Calle de Serrano, 89, Madrid;;;;;
+Juan Martínez – Calle del Prado, 45, Parla;;;;;
+Isabel Sánchez – Plaza de Cibeles, 7, Madrid;;;;;
+José Álvarez – Calle de Fuencarral, 32, Cercedilla;;;;;
+Marta Torres – Calle de Vallehermoso, 73, Pinto;;;;;
+Antonio Ruiz – Avenida de América, 128, Madrid;;;;;
+Elena Gómez – Calle de Santa Engracia, 65, Madrid;;;;;
+Luis Díaz – Paseo del Prado, 55, Madrid;;;;;
+Sofía Jiménez – Calle de Atocha, 99, Madrid;;;;;
+Pedro Morales – Plaza Mayor, 2, Madrid;;;;;
+Raquel Ramírez – Calle de Montera, 11, Madrid;;;;;
+Ricardo Romero – Calle de la Princesa, 40, Madrid;;;;;
+Paula Herrera – Avenida de la Paz, 51, Madrid;;;;;
+Fernando González – Calle de Embajadores, 21, Madrid;;;;;
+Carmen Ruiz – Calle de Bravo Murillo, , Madrid;;;;;
+Miguel Fernández – Paseo de Recoletos, 87, Madrid;;;;;
+María García – Paseo de la Castellana, 120, Madrid;;;;;
+Carlos Martín – Avenida de la Constitución, 66, Madrid;;;;;
+Elena Ruiz – Avenida de América, , Madrid;;;;;
+&&&&&;;;;;
+Nombre;Apellido;Teléfono;;;
+Ana;Rodríguez;912 345 678;;;
+Carlos;Pérez;915 678 901;;;
+David;García;934 567 890;;;
+María;López;951 234 567;;;
+Juan;Martínez;965 876 543;;;
+Isabel;Sánchez;;;;
+José;Álvarez;926 654 321;;;
+Marta;Torres;928 765 432;;;
+Antonio;Ruiz;930 876 543;;;
+Elena;Gómez;;;;
+Luis;Díaz;612 345 678;;;
+Sofía;Jiménez;600 987 654;;;
+Pedro;Morales;628 765 432;;;
+Raquel;Ramírez;670 123 456;;;
+Ricardo;Romero;633 543 210;;;
+Paula;Herrera;615 789 012;;;
+Fernando;González;628 456 789;;;
+Carmen;Ruiz;689 123 456;;;
+Miguel;Fernández;627 654 321;;;
+María;García;920 123 456;;;
+Carlos;Martín;931 234 567;;;
+&&&&&;;;;;
+Nombre;Apellido;Fecha de compra;Referencia de producto;Descripción de producto;Precio
+Marta;Torres;24/11/2024;225560;Pantalón negro;55,68 €
+José;Álvarez;22/11/2024;208070;Juego de cucharas;126,30 €
+Miguel;Fernández;01/12/2024;317878;Lámpara;46,00 €
+Juan;Martínez;30/11/2024;151266;Ratón para ordenador;20,99 €
+Luis;Díaz;15/11/2024;244955;Reloj de muñeca;86,48 €
+José;Álvarez;22/11/2024;317878;Lámpara;46,00 €
+José;Álvarez;17/11/2024;225560;Pantalón negro;55,68 €
+Carmen;Ruiz;24/11/2024;331208;Camisa blanca;50,22 €
+Marta;Torres;22/11/2024;151266;Ratón para ordenador;20,99 €
+Marta;Torres;30/11/2024;331208;Camisa blanca;50,22 €
+José;Álvarez;30/11/2024;331208;Camisa blanca;50,22 €
+Isabel;Sánchez;24/11/2024;255565;Cuaderno;5,50 €
+David;García;22/11/2024;331208;Camisa blanca;50,22 €
+Pedro;Morales;30/11/2024;225560;Pantalón negro;55,68 €
+Carlos;Pérez;30/11/2024;224998;Bolsa de caramelos;3,40 €
+Antonio;Ruiz;17/11/2024;211365;Paquete de chicles;2,15 €
+Marta;Torres;30/11/2024;224998;Bolsa de caramelos;3,40 €
