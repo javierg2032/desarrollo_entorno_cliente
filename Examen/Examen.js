@@ -51,60 +51,155 @@ document
   });
 
 function processCSV(text) {
-  const ficheros = text.split("&&&&&"); // Dividir el contenido en secciones
+  const fichero = text.split("&&&&&"); // Dividir el contenido en secciones
 
   // Procesar las secciones
-  const clientes = ficheros[0]
+  const clienteDireccion = fichero[0]
     .split("\r\n")
     .slice(1)
     .map((linea) => linea.split(";"));
-  const telefonos = ficheros[1]
-    .split("\r\n")
-    .slice(1)
-    .map((linea) => linea.split(";"));
-  const compras = ficheros[2]
-    .split("\r\n")
-    .slice(1)
-    .map((linea) => linea.split(";"));
+  clienteDireccion.shift(); //Elimino la primera fila, correspondiente a lo que seria el nombre de las columnas
+  clienteDireccion.pop(); //Elimina la ultima fila, correspondiente a una fila vacia que se añadia a la sección
 
-  console.log(clientes);
-  console.log(telefonos);
-  console.log(compras);
+  const clienteTelefono = fichero[1]
+    .split("\r\n")
+    .slice(1)
+    .map((linea) => linea.split(";"));
+  clienteTelefono.shift(); //Elimino la primera fila, correspondiente a lo que seria el nombre de las columnas
+  clienteTelefono.pop(); //Elimina la ultima fila, correspondiente a una fila vacia que se añadia a la sección
 
-  const diferenciasDias = calcularDiferenciaDias(compras);
-  console.log(diferenciasDias);
+  const clientePedido = fichero[2]
+    .split("\r\n")
+    .slice(1)
+    .map((linea) => linea.split(";"));
+  clientePedido.shift(); //Elimino la primera fila, correspondiente a lo que seria el nombre de las columnas
+  clientePedido.pop(); //Elimina la ultima fila, correspondiente a una fila vacia que se añadia a la sección
+
+  console.log(clienteDireccion);
+  console.log(clienteTelefono);
+  console.log(clientePedido);
+
+  // const diferenciasDias = calcularDiferenciaDias(clientePedido);
+  // console.log(diferenciasDias);
+  console.log(
+    listadoClientes(clienteDireccion, clienteTelefono, clientePedido)
+  );
+}
+
+/*function listadoClientes(clienteDireccion, clienteTelefono, clientePedido) {
+  const clientesNoOk = [];
+
+  for (let i = 0; i < clienteDireccion.length; i++) {
+    let cliente = clienteDireccion[i];
+
+    // Separar nombre y dirección usando "–" como separador
+    let partes = cliente[0].split("–"); //separo la primera columna entre nombre completo y direccion, separandolos con "–"
+
+    let nombreCompleto = partes[0].trim(); // Eliminar espacios innecesarios
+    let direccionCompleta = partes[1].trim(); // Eliminar espacios innecesarios
+
+    // Dividir el nombre completo en nombre y apellido
+    let nombrePartes = nombreCompleto.split(" ");
+    let nombre = nombrePartes[0]; // Primer elemento: nombre
+    let apellido = nombrePartes.slice(1).join(" "); // Resto de los elementos: apellido
+
+    let direccionPartes = direccionCompleta.split(",");
+
+    let calle = direccionPartes[0];
+    let nCalle = direccionPartes[1];
+    let poblacion = direccionPartes[2];
+    let telefono = "vacío";
+
+    for (let j = 0; j < clienteTelefono.length; j++) {
+      if (clienteTelefono[0] == nombre && clienteTelefono[1] == apellido) {
+        telefono = clienteTelefono[3];
+      }
+    }
+
+    console.log("Nombre:", nombre);
+    console.log("Apellido:", apellido);
+    console.log("Calle:", calle);
+    console.log("Nº Calle:", nCalle);
+    console.log("Población:", poblacion);
+    console.log("Teléfono:", telefono);
+  }
+}*/
+
+function listadoClientes(clienteDireccion, clienteTelefono, clientePedido) {
+  const clientesNoOk = [];
+
+  for (let i = 0; i < clienteDireccion.length; i++) {
+    let cliente = clienteDireccion[i];
+
+    // Separar nombre y dirección usando "–" como separador
+    let partes = cliente[0].split("–");
+    let nombreCompleto = partes[0].trim();
+    let direccionCompleta = partes[1].trim();
+
+    // Dividir el nombre completo en nombre y apellido
+    let nombrePartes = nombreCompleto.split(" ");
+    let nombre = nombrePartes[0];
+    let apellido = nombrePartes.slice(1).join(" ");
+
+    // Dividir dirección completa
+    let direccionPartes = direccionCompleta.split(",");
+    let calle = direccionPartes[0].trim();
+    let nCalle = direccionPartes[1]?.trim() || "Desconocido";
+    let poblacion = direccionPartes[2]?.trim() || "Desconocido";
+
+    // Buscar teléfono
+    let telefono = "vacío";
+    for (let j = 0; j < clienteTelefono.length; j++) {
+      if (
+        clienteTelefono[j][0] === nombre &&
+        clienteTelefono[j][1] === apellido
+      ) {
+        telefono = clienteTelefono[j][3];
+        break; // Terminar la búsqueda al encontrar el teléfono
+      }
+    }
+
+    // Imprimir detalles del cliente
+    console.log("Nombre:", nombre);
+    console.log("Apellido:", apellido);
+    console.log("Calle:", calle);
+    console.log("Nº Calle:", nCalle);
+    console.log("Población:", poblacion);
+    console.log("Teléfono:", telefono);
+    console.log("--------------------------");
+  }
 }
 
 // Calculo la diferencia en días desde la fecha de compra
-function calcularDiferenciaDias(compras) {
+function calcularDiferenciaDias(clientePedido) {
   const hoy = new Date(); // Fecha actual
   const resultados = [];
 
-  for (let i = 0; i < compras.length; i++) {
-    let compra = compras[i];
-    let nombre = compra[0];
-    let apellido = compra[1];
-    let fechaCompra = compra[2];
-    let referencia = compra[3];
+  for (let i = 0; i < clientePedido.length; i++) {
+    let pedido = clientePedido[i];
+    let nombre = pedido[0];
+    let apellido = pedido[1];
+    let fechaPedido = pedido[2];
+    let referencia = pedido[3];
 
     // Verifico si la fecha de compra existe
-    if (!fechaCompra) {
+    if (!fechaPedido) {
       continue;
     }
 
     // Limpio los espacios antes o después de la fecha
-    fechaCompra = fechaCompra.trim();
+    fechaPedido = fechaPedido.trim();
 
     // Dividir la fecha en partes (día, mes, año)
-    const fechaParts = fechaCompra.split("/");
+    const fechaPartida = fechaPedido.split("/");
 
     // Verifico si la fecha tiene 3 partes (día, mes, año)
-    if (fechaParts.length !== 3) {
+    if (fechaPartida.length !== 3) {
       continue;
     }
 
     // Creo la fecha en formato correcto (YYYY-MM-DD)
-    const fechaFormateada = `${fechaParts[2]}-${fechaParts[1]}-${fechaParts[0]}`;
+    const fechaFormateada = `${fechaPartida[2]}-${fechaPartida[1]}-${fechaPartida[0]}`;
     const fecha = new Date(fechaFormateada);
 
     // Verifico si la fecha es válida
@@ -113,7 +208,7 @@ function calcularDiferenciaDias(compras) {
     }
 
     // Calcular la diferencia en días
-    const diferencia = Math.floor((hoy - fecha) / (1000 * 60 * 60 * 24));
+    const diferencia = Math.floor((hoy - fecha) / (1000 * 60 * 60 * 24)); // Un dia esta compuesto de: milisegundos * segundos * minutos * horas
 
     // Añado el resultado al arreglo con el formato solicitado
     resultados.push(
