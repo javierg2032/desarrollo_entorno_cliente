@@ -83,7 +83,7 @@ function comprobarEmail(emailLector, nombreLector, apellidoLector) {
 
 // Función para comprobar el teléfono
 function comprobarTelefono(telefonoLector, nombreLector, apellidoLector) {
-  const telefonoValido = /^[9|6|7][0-9]{9}$/;
+  const telefonoValido = /^[9|6|7][0-9]{8}$/; // Comienza por 9, 6 o 7 y tiene 8 dígitos despues del primero
 
   if (!telefonoValido.test(telefonoLector)) {
     alert("Número de teléfono inválido");
