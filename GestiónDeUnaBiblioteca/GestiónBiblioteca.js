@@ -39,7 +39,11 @@ function altaLector() {
   let apellido = prompt("Introduce el apellido:");
   let telefono = prompt("Introduce el teléfono:");
   let email = prompt("Introduce el email:");
-  if (comprobarEmail(numSocio) && comprobarTelefono(numSocio)) {
+
+  if (
+    comprobarEmail(email, nombre, apellido) &&
+    comprobarTelefono(telefono, nombre, apellido)
+  ) {
     listaLectores.push(new Lector(numSocio, nombre, apellido, telefono, email));
     alert("Lector añadido correctamente");
   } else {
@@ -62,45 +66,35 @@ function bajaLector(numeroSocio) {
   }
 }
 
-function comprobarEmail(numeroSocio) {
-  const dominios = listaDominiosValidos.join("|"); // Unir los dominios con "|"
-  const emailValido = new RegExp( //Crear una expresión regular con el patrón de validación de email con los dominios validos del array
+// Función para comprobar el email
+function comprobarEmail(emailLector, nombreLector, apellidoLector) {
+  const dominios = listaDominiosValidos.join("|");
+  const emailValido = new RegExp(
     `^\\w+([.-_+]?\\w+)*@\\w+([.-]?\\w+)*(\\.(${dominios}))+$`
-  ); // Comprueba que comienza por letras, numeros, guiones bajos o puntos, seguido de @, letras, guiones o puntos, seguido de un punto y de una de las cadenas en el array de Strings listaDominiosValidos
-  for (let lector in listaLectores) {
-    if (listaLectores[lector].numSocio == numeroSocio) {
-      if (!emailValido.test(email.value)) {
-        //.test comprueba que el texto coincide con el patrón
-        alert("Dirección de email invalida");
-        listaCorreosInvalidos.push(
-          listaLectores[lector].nombre,
-          listaLectores[lector].apellido,
-          listaLectores[lector].email
-        );
-      } else {
-        return true;
-      }
-    }
+  );
+
+  if (!emailValido.test(emailLector)) {
+    alert("Dirección de email inválida");
+    listaCorreosInvalidos.push({ nombreLector, apellidoLector, emailLector });
+    return false;
   }
+  return true;
 }
 
-function comprobarTelefono(numeroSocio) {
-  var telefonoValido = /^[9|6|7][0-9]{9}$/; //Comprueba que comienza por 9,6 o 7, tiene 9 digitos en total y que contiene solamente numeros
-  for (let lector in listaLectores) {
-    if (listaLectores[lector].numSocio == numeroSocio) {
-      if (!telefonoValido.test(telefono.value)) {
-        //.test comprueba que el texto coincide con el patrón
-        alert("Número de teléfono invalido");
-        listaCorreosInvalidos.push(
-          listaLectores[lector].nombre,
-          listaLectores[lector].apellido,
-          listaLectores[lector].telefono
-        );
-      } else {
-        return true;
-      }
-    }
+// Función para comprobar el teléfono
+function comprobarTelefono(telefonoLector, nombreLector, apellidoLector) {
+  const telefonoValido = /^[9|6|7][0-9]{9}$/;
+
+  if (!telefonoValido.test(telefonoLector)) {
+    alert("Número de teléfono inválido");
+    listaCorreosInvalidos.push({
+      nombreLector,
+      apellidoLector,
+      telefonoLector,
+    });
+    return false;
   }
+  return true;
 }
 
 function modifLector(numeroSocio) {
