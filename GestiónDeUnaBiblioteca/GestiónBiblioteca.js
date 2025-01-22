@@ -1,3 +1,18 @@
+//Recibir Fichero
+document
+  .getElementById("fileInput")
+  .addEventListener("change", function (event) {
+    const file = event.target.files[0]; // Archivo seleccionado por el usuario
+    const reader = new FileReader(); // Lector de archivos
+
+    reader.onload = function (e) {
+      const text = e.target.result; // Contenido del archivo
+      processCSV(text); // Procesar el contenido del archivo
+    };
+
+    reader.readAsText(file); // Leer el archivo como texto
+  });
+
 //Constructor Lector
 function Lector(numSocio, nombre, apellido, telefono, email) {
   this.numSocio = numSocio;
@@ -31,6 +46,41 @@ const listaTelefonosInvalidos = [];
 
 //Listado Dominios Validos
 const listaDominiosValidos = ["es", "com", "org", "net", "eu"];
+
+// Procesar CSV
+function processCSV(text) {
+  let tipoFichero = prompt(
+    "¿El fichero que vas a introducir es el de los lectores?"
+  );
+
+  const fichero = text
+    .split("\r\n") // Dividir en líneas
+    .slice(1) // Eliminar la primera línea (encabezado)
+    .map((linea) => {
+      // Primero dividir la línea por ';'
+      let celdas = linea.split(";");
+
+      // Luego, dividir cada celda por ',' si es necesario y devolver el array completo
+      return celdas.map((celda) => celda.split(",")).flat();
+    });
+
+  fichero.pop();
+
+  if (tipoFichero.toLowerCase() === "si") {
+    for (let celda of fichero) {
+      listaLectores.push(
+        new Lector(celda[0], celda[1], celda[2], celda[3], celda[4])
+      );
+    }
+  } else {
+    for (let celda of fichero) {
+      listaLibros.push(
+        new Libro(celda[0], celda[1], celda[2], celda[3], celda[4], celda[5])
+      );
+    }
+  }
+  console.log(fichero);
+}
 
 //Funciones de Lector
 function altaLector() {
