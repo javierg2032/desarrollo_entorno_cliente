@@ -54,17 +54,17 @@ function processCSV(text) {
   );
 
   const fichero = text
-    .split("\r\n") // Dividir en líneas
-    .slice(1) // Eliminar la primera línea (encabezado)
+    .split("\r\n") // Divido en líneas
+    .slice(1) // Elimino la primera línea (encabezado)
     .map((linea) => {
-      // Primero dividir la línea por ';'
+      // Divido el fichero por lineas
       let celdas = linea.split(";");
 
-      // Luego, dividir cada celda por ',' si es necesario y devolver el array completo
+      // Divido las lineas en celdas y convierto en array las filas
       return celdas.map((celda) => celda.split(",")).flat();
     });
 
-  fichero.pop();
+  fichero.pop(); //Elimino la ultima linea vacia
 
   if (tipoFichero.toLowerCase() === "si") {
     for (let celda of fichero) {
@@ -72,14 +72,17 @@ function processCSV(text) {
         new Lector(celda[0], celda[1], celda[2], celda[3], celda[4])
       );
     }
+    /*console.log(fichero);*/
+    console.log(listaLectores);
   } else {
     for (let celda of fichero) {
       listaLibros.push(
         new Libro(celda[0], celda[1], celda[2], celda[3], celda[4], celda[5])
       );
     }
+    /*console.log(fichero);*/
+    console.log(listaLibros);
   }
-  console.log(fichero);
 }
 
 //Funciones de Lector
@@ -91,28 +94,43 @@ function altaLector() {
   let email = prompt("Introduce el email:");
 
   if (
-    comprobarEmail(email, nombre, apellido) &&
-    comprobarTelefono(telefono, nombre, apellido)
+    numSocio != "" &&
+    nombre != "" &&
+    apellido != "" &&
+    telefono != "" &&
+    email != ""
   ) {
-    listaLectores.push(new Lector(numSocio, nombre, apellido, telefono, email));
-    alert("Lector añadido correctamente");
-  } else {
-    alert(
-      "No se ha podido añadir el lector debido a que el email o el teléfono no son válidos"
-    );
+    if (
+      comprobarEmail(email, nombre, apellido) &&
+      comprobarTelefono(telefono, nombre, apellido)
+    ) {
+      listaLectores.push(
+        new Lector(numSocio, nombre, apellido, telefono, email)
+      );
+      alert("Lector añadido correctamente");
+    } else {
+      alert(
+        "No se ha podido añadir el lector debido a que el email o el teléfono no son válidos"
+      );
+    }
   }
 }
 
 function bajaLector(numeroSocio) {
+  let numeroSocioString = numeroSocio.toString();
+  let estadoBaja = false;
   for (let lector in listaLectores) {
-    if (listaLectores[lector].numSocio == numeroSocio) {
+    if (listaLectores[lector].numSocio == numeroSocioString) {
       listaLectores[lector].bajaLector = true;
       listaLectores[lector].fechaBaja = new Date();
-    } else {
-      alert(
-        "El número de socio introducido no coincide con el de ningún lector"
-      );
+      estadoBaja = true;
+      break;
     }
+  }
+  if (estadoBaja == true) {
+    alert("Lector dado de baja correctamente");
+  } else {
+    alert("El número de socio introducido no coincide con el de ningún lector");
   }
 }
 
@@ -197,4 +215,127 @@ function modifLector(numeroSocio) {
       }
       break;
   }
+  alert("Lector modificado correctamente");
 }
+
+//Funciones de Libro
+function altaLibro() {
+  let codLibro = prompt("Introduce el codigo del libro:");
+  let isbn = prompt("Introduce el isbn:");
+  let autor = prompt("Introduce el autor:");
+  let titulo = prompt("Introduce el titulo:");
+  let editorial = prompt("Introduce la editorial:");
+  let ejemplares = prompt("Introduce los ejemplares:");
+
+  if (
+    codLibro != "" &&
+    isbn != "" &&
+    autor != "" &&
+    titulo != "" &&
+    editorial != "" &&
+    ejemplares != ""
+  ) {
+    listaLibros.push(
+      new Libro(codLibro, isbn, autor, titulo, editorial, ejemplares)
+    );
+    alert("Libro añadido correctamente");
+  }
+}
+
+function bajaLibro(codigoLibro) {
+  for (let libro in listaLibros) {
+    if (listaLibros[libro].codLibro == codigoLibro) {
+      listaLibros[libro].bajaLibro = true;
+      listaLibros[libro].fechaBaja = new Date();
+    } else {
+      alert(
+        "El código de libro introducido no coincide con el de ningún libro"
+      );
+    }
+  }
+}
+
+function modifLibro(codigoLibro) {
+  let datoAModificar = prompt("Introduce el dato a modificar");
+  switch (datoAModificar) {
+    case "codLibro":
+      let codLibro = prompt("Introduce el codigo de libro:");
+      for (let libro in listaLibros) {
+        if (listaLibros[libro].codLibro == codigoLibro) {
+          for (let libro in listaLibros) {
+            if (listaLibros[libro].codLibro == codigoLibro) {
+              alert("El código de libro ya existe");
+            } else {
+              listaLibros[libro].codLibro = codLibro;
+            }
+          }
+        }
+      }
+      break;
+    case "isbn":
+      let isbn = prompt("Introduce el isbn:");
+      for (let libro in listaLibros) {
+        if (listaLibros[libro].codLibro == codigoLibro) {
+          listaLibros[libro].isbn = isbn;
+        }
+      }
+      break;
+    case "autor":
+      let autor = prompt("Introduce el autor:");
+      for (let libro in listaLibros) {
+        if (listaLibros[libro].codLibro == codigoLibro) {
+          listaLibros[libro].autor = autor;
+        }
+      }
+      break;
+    case "titulo":
+      let titulo = prompt("Introduce el titulo:");
+      for (let libro in listaLibros) {
+        if (listaLibros[libro].codLibro == codigoLibro) {
+          listaLibros[libro].titulo = titulo;
+        }
+      }
+      break;
+    case "editorial":
+      let editorial = prompt("Introduce el editorial:");
+      for (let libro in listaLibros) {
+        if (listaLibros[libro].codLibro == codigoLibro) {
+          listaLibros[libro].editorial = editorial;
+        }
+      }
+      break;
+
+    case "ejemplares":
+      let ejemplares = prompt("Introduce el ejemplares:");
+      for (let libro in listaLibros) {
+        if (listaLibros[libro].codLibro == codigoLibro) {
+          listaLibros[libro].ejemplares = ejemplares;
+        }
+      }
+      break;
+  }
+  alert("Libro modificado correctamente");
+}
+
+function hayLibro(codigoIsbn, nombreAutor, tituloLibro) {
+  for (let libro in listaLibros) {
+    if (
+      listaLibros[libro].isbn == codigoIsbn &&
+      listaLibros[libro].autor == nombreAutor &&
+      listaLibros[libro].titulo == tituloLibro
+    ) {
+      return isbn + nombre + autor + titulo + ejemplares;
+    } else return Error;
+  }
+}
+
+/*function prestamoLibro(codigoIsbn) {
+  for (let libro in listaLibros) {
+    if (listaLibros[libro].isbn == codigoIsbn) {
+    if(listaLibros[libro].ejemplares>0){
+
+    }
+    
+    }
+  }
+}*/
