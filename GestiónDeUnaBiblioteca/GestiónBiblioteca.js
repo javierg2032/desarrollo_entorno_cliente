@@ -143,7 +143,24 @@ function comprobarEmail(emailLector, nombreLector, apellidoLector) {
 
   if (!emailValido.test(emailLector)) {
     alert("Dirección de email inválida");
-    listaCorreosInvalidos.push({ nombreLector, apellidoLector, emailLector });
+
+    /*Compruebo si el lector existe para añadirlo a la lista de correos invalidos, si no existe 
+    (es decir que se esta llamando a la función a la hora de dar de alta un nuevo lector) 
+    devuelvo false pero sin añadirlo a la lista de no validos*/
+
+    for (let lector in listaLectores) {
+      if (
+        listaLectores[lector].nombre == nombreLector &&
+        listaLectores[lector].apellido == apellidoLector &&
+        listaLectores[lector].email == emailLector
+      ) {
+        listaCorreosInvalidos.push({
+          nombreLector,
+          apellidoLector,
+          emailLector,
+        });
+      }
+    }
     return false;
   }
   return true;
@@ -155,11 +172,24 @@ function comprobarTelefono(telefonoLector, nombreLector, apellidoLector) {
 
   if (!telefonoValido.test(telefonoLector)) {
     alert("Número de teléfono inválido");
-    listaCorreosInvalidos.push({
-      nombreLector,
-      apellidoLector,
-      telefonoLector,
-    });
+
+    /*Compruebo si el lector existe para añadirlo a la lista de telefonos invalidos, si no existe 
+    (es decir que se esta llamando a la función a la hora de dar de alta un nuevo lector) 
+    devuelvo false pero sin añadirlo a la lista de no validos*/
+
+    for (let lector in listaLectores) {
+      if (
+        listaLectores[lector].nombre == nombreLector &&
+        listaLectores[lector].apellido == apellidoLector &&
+        listaLectores[lector].email == emailLector
+      ) {
+        listaCorreosInvalidos.push({
+          nombreLector,
+          apellidoLector,
+          telefonoLector,
+        });
+      }
+    }
     return false;
   }
   return true;
@@ -324,18 +354,49 @@ function hayLibro(codigoIsbn, nombreAutor, tituloLibro) {
       listaLibros[libro].autor == nombreAutor &&
       listaLibros[libro].titulo == tituloLibro
     ) {
-      return isbn + nombre + autor + titulo + ejemplares;
+      return (
+        listaLibros[libro].isbn +
+        " " +
+        listaLibros[libro].autor +
+        " " +
+        listaLibros[libro].titulo +
+        " " +
+        listaLibros[libro].ejemplares
+      );
     } else return Error;
   }
 }
 
-/*function prestamoLibro(codigoIsbn) {
+function prestamoLibro(codigoIsbn) {
+  let prestado = false;
   for (let libro in listaLibros) {
     if (listaLibros[libro].isbn == codigoIsbn) {
-    if(listaLibros[libro].ejemplares>0){
-
-    }
-    
+      if (listaLibros[libro].ejemplares > 0) {
+        listaLibros[libro].estado = "Prestado";
+        prestado = true;
+        if (prestado) {
+          listaLibros[libro].ejemplares =
+            listaLibros[libro].ejemplares.value() - 1;
+        }
+      } else {
+        alert(
+          "No hay suficientes ejemplares disponibles para realizar el prestamo"
+        );
+      }
     }
   }
-}*/
+}
+
+function devolucionLibro(codigoIsbn) {
+  for (let libro in listaLibros) {
+    if (listaLibros[libro].isbn == codigoIsbn) {
+      if (listaLibros[libro].ejemplares > 0) {
+        prestado = false;
+        if (!prestado) {
+          listaLibros[libro].ejemplares =
+            listaLibros[libro].ejemplares.value() + 1;
+        }
+      }
+    }
+  }
+}
