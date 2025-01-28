@@ -32,6 +32,14 @@ function Libro(codLibro, isbn, autor, titulo, editorial, ejemplares) {
   this.ejemplares = ejemplares;
 }
 
+//Constructor Prestamo
+function Prestamo(numPrestamo, numSocio, codLibro) {
+  this.numPrestamo = numPrestamo;
+  this.numSocio = numSocio;
+  this.codLibro = codLibro;
+  this.fechaPrestamo = new Date();
+}
+
 //Listado Lectores
 const listaLectores = [];
 
@@ -46,6 +54,12 @@ const listaTelefonosInvalidos = [];
 
 //Listado Dominios Validos
 const listaDominiosValidos = ["es", "com", "org", "net", "eu"];
+
+//Listado Prestamos Total
+const listadoTotalPrestamos = [];
+
+//Listado Prestamos Vivos
+const listadoPrestamosVivos = [];
 
 // Procesar CSV
 function processCSV(text) {
@@ -181,9 +195,9 @@ function comprobarTelefono(telefonoLector, nombreLector, apellidoLector) {
       if (
         listaLectores[lector].nombre == nombreLector &&
         listaLectores[lector].apellido == apellidoLector &&
-        listaLectores[lector].email == emailLector
+        listaLectores[lector].telefono == telefonoLector
       ) {
-        listaCorreosInvalidos.push({
+        listaTelefonosInvalidos.push({
           nombreLector,
           apellidoLector,
           telefonoLector,
@@ -354,29 +368,27 @@ function hayLibro(codigoIsbn, nombreAutor, tituloLibro) {
       listaLibros[libro].autor == nombreAutor &&
       listaLibros[libro].titulo == tituloLibro
     ) {
-      return (
-        listaLibros[libro].isbn +
-        " " +
-        listaLibros[libro].autor +
-        " " +
-        listaLibros[libro].titulo +
-        " " +
-        listaLibros[libro].ejemplares
-      );
+      return listaLibros[libro];
     } else return Error;
   }
 }
 
-function prestamoLibro(codigoIsbn) {
+function prestamoLibro(codigoLibro) {
   let prestado = false;
   for (let libro in listaLibros) {
-    if (listaLibros[libro].isbn == codigoIsbn) {
+    if (listaLibros[libro].codLibro == codigoLibro) {
       if (listaLibros[libro].ejemplares > 0) {
         listaLibros[libro].estado = "Prestado";
         prestado = true;
+
         if (prestado) {
+          //Lo convierto en un entero para poder restarle 1
           listaLibros[libro].ejemplares =
-            listaLibros[libro].ejemplares.value() - 1;
+            parseInt(listaLibros[libro].ejemplares) - 1;
+
+          //Vuelvo a convertirlo en cadena para que no haya problemas al volver a llamar a la funcion
+          listaLibros[libro].ejemplares =
+            listaLibros[libro].ejemplares.toString();
         }
       } else {
         alert(
@@ -385,18 +397,58 @@ function prestamoLibro(codigoIsbn) {
       }
     }
   }
+  return prestado;
+}
+
+function solicitudPrestamo(codLibro, numSocio) {
+  prestamoLibro(codLibro);
+  if (prestamoLibro()) {
+    numeroPrestamo = 1;
+    if (
+      listadoTotalPrestamos[listadoTotalPrestamos.length - 1].numeroPrestamo >=
+      1
+    ) {
+      numeroPrestamo = numeroPrestamo + 1;
+    }
+
+    listadoTotalPrestamos.push(
+      new Prestamo(numeroPrestamo, numSocio, codLibro)
+    );
+  }
 }
 
 function devolucionLibro(codigoIsbn) {
+  let prestado = true;
   for (let libro in listaLibros) {
     if (listaLibros[libro].isbn == codigoIsbn) {
       if (listaLibros[libro].ejemplares > 0) {
         prestado = false;
+
         if (!prestado) {
+          //Lo convierto en un entero para poder sumarle 1
           listaLibros[libro].ejemplares =
-            listaLibros[libro].ejemplares.value() + 1;
+            parseInt(listaLibros[libro].ejemplares) + 1;
+
+          //Vuelvo a convertirlo en cadena para que no haya problemas al volver a llamar a la funcion
+          listaLibros[libro].ejemplares =
+            listaLibros[libro].ejemplares.toString();
         }
       }
+    }
+  }
+  return prestado;
+}
+
+function devolucionPrestamos(codigoIsbn, numPrestamo) {
+  devolucionLibro(codigoIsbn);
+  if (!devolucionLibro()) {
+    for (let prestamo in listadoTotalPrestamos) {
+      if (listadoTotalPrestamos[prestamo].numPrestamo == numPrestamo) {
+        listadoTotalPrestamos[prestamo].fechaDevolucion = new Date();
+      }
+    }
+    for (let prestamo in listadoPrestamosVivos) {
+      listadoPrestamosVivos.splice(listadoPrestamosVivos.indexOf(prestamo), 1);
     }
   }
 }
