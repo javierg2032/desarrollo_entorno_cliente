@@ -1,17 +1,64 @@
-//Recibir Fichero
+// Recibir Fichero de Libros
 document
-  .getElementById("fileInput")
+  .getElementById("importar-input-libros")
   .addEventListener("change", function (event) {
     const file = event.target.files[0]; // Archivo seleccionado por el usuario
     const reader = new FileReader(); // Lector de archivos
 
     reader.onload = function (e) {
       const text = e.target.result; // Contenido del archivo
-      processCSV(text); // Procesar el contenido del archivo
+      processCSV(text, "libros"); // Procesar el contenido del archivo
     };
 
     reader.readAsText(file); // Leer el archivo como texto
   });
+
+// Recibir Fichero de Lectores
+document
+  .getElementById("importar-input-lectores")
+  .addEventListener("change", function (event) {
+    const file = event.target.files[0]; // Archivo seleccionado por el usuario
+    const reader = new FileReader(); // Lector de archivos
+
+    reader.onload = function (e) {
+      const text = e.target.result; // Contenido del archivo
+      processCSV(text, "lectores"); // Procesar el contenido del archivo
+    };
+
+    reader.readAsText(file); // Leer el archivo como texto
+  });
+
+// Procesar CSV
+function processCSV(text, tipoFichero) {
+  const fichero = text
+    .split("\r\n") // Divido en líneas
+    .slice(1) // Elimino la primera línea (encabezado)
+    .map((linea) => {
+      // Divido el fichero por lineas
+      let celdas = linea.split(";");
+
+      // Divido las lineas en celdas y convierto en array las filas
+      return celdas.map((celda) => celda.split(",")).flat();
+    });
+
+  fichero.pop(); // Elimino la ultima linea vacia
+
+  if (tipoFichero === "lectores") {
+    for (let celda of fichero) {
+      listaLectores.push(
+        new Lector(celda[0], celda[1], celda[2], celda[3], celda[4])
+      );
+    }
+    console.log(listaLectores);
+  } else if (tipoFichero === "libros") {
+    for (let celda of fichero) {
+      listaLibros.push(
+        new Libro(celda[0], celda[1], celda[2], celda[3], celda[4], celda[5])
+      );
+    }
+    console.log(listaLibros);
+  }
+}
 
 //Constructor Lector
 function Lector(numSocio, nombre, apellido, telefono, email) {
@@ -60,44 +107,6 @@ const listadoTotalPrestamos = [];
 
 //Listado Prestamos Vivos
 const listadoPrestamosVivos = [];
-
-// Procesar CSV
-function processCSV(text) {
-  let tipoFichero = prompt(
-    "¿El fichero que vas a introducir es el de los lectores?"
-  );
-
-  const fichero = text
-    .split("\r\n") // Divido en líneas
-    .slice(1) // Elimino la primera línea (encabezado)
-    .map((linea) => {
-      // Divido el fichero por lineas
-      let celdas = linea.split(";");
-
-      // Divido las lineas en celdas y convierto en array las filas
-      return celdas.map((celda) => celda.split(",")).flat();
-    });
-
-  fichero.pop(); //Elimino la ultima linea vacia
-
-  if (tipoFichero.toLowerCase() === "si") {
-    for (let celda of fichero) {
-      listaLectores.push(
-        new Lector(celda[0], celda[1], celda[2], celda[3], celda[4])
-      );
-    }
-    /*console.log(fichero);*/
-    console.log(listaLectores);
-  } else {
-    for (let celda of fichero) {
-      listaLibros.push(
-        new Libro(celda[0], celda[1], celda[2], celda[3], celda[4], celda[5])
-      );
-    }
-    /*console.log(fichero);*/
-    console.log(listaLibros);
-  }
-}
 
 //Funciones de Lector
 function altaLector() {
@@ -156,8 +165,6 @@ function comprobarEmail(emailLector, nombreLector, apellidoLector) {
   );
 
   if (!emailValido.test(emailLector)) {
-    alert("Dirección de email inválida");
-
     /*Compruebo si el lector existe para añadirlo a la lista de correos invalidos, si no existe 
     (es decir que se esta llamando a la función a la hora de dar de alta un nuevo lector) 
     devuelvo false pero sin añadirlo a la lista de no validos*/
@@ -178,6 +185,11 @@ function comprobarEmail(emailLector, nombreLector, apellidoLector) {
     return false;
   }
   return true;
+}
+
+function comprobarEmailCreacion(emailLector, nombreLector, apellidoLector) {
+  comprobarEmail(emailLector, nombreLector, apellidoLector);
+  if (!comprobarEmail()) alert("Dirección de email inválida");
 }
 
 // Función para comprobar el teléfono
