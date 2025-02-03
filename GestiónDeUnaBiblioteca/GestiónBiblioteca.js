@@ -1,31 +1,30 @@
 // Recibir Fichero de Libros
+
 document
-  .getElementById("importar-input-libros")
-  .addEventListener("change", function (event) {
-    const file = event.target.files[0]; // Archivo seleccionado por el usuario
-    const reader = new FileReader(); // Lector de archivos
+  .getElementById("importar-boton")
+  .addEventListener("click", function () {
+    const fileLibros = document.getElementById("importar-input-libros")
+      .files[0];
+    const fileLectores = document.getElementById("importar-input-lectores")
+      .files[0];
 
-    reader.onload = function (e) {
-      const text = e.target.result; // Contenido del archivo
-      processCSV(text, "libros"); // Procesar el contenido del archivo
-    };
+    if (fileLibros) {
+      const readerLibros = new FileReader();
+      readerLibros.onload = function (e) {
+        const text = e.target.result;
+        processCSV(text, "libros");
+      };
+      readerLibros.readAsText(fileLibros);
+    }
 
-    reader.readAsText(file); // Leer el archivo como texto
-  });
-
-// Recibir Fichero de Lectores
-document
-  .getElementById("importar-input-lectores")
-  .addEventListener("change", function (event) {
-    const file = event.target.files[0]; // Archivo seleccionado por el usuario
-    const reader = new FileReader(); // Lector de archivos
-
-    reader.onload = function (e) {
-      const text = e.target.result; // Contenido del archivo
-      processCSV(text, "lectores"); // Procesar el contenido del archivo
-    };
-
-    reader.readAsText(file); // Leer el archivo como texto
+    if (fileLectores) {
+      const readerLectores = new FileReader();
+      readerLectores.onload = function (e) {
+        const text = e.target.result;
+        processCSV(text, "lectores");
+      };
+      readerLectores.readAsText(fileLectores);
+    }
   });
 
 // Procesar CSV
@@ -110,6 +109,7 @@ const listadoPrestamosVivos = [];
 
 //Funciones de Lector
 function altaLector() {
+  //numSocio debe generarse automaticamente sin repetirse con algun numSocio existente
   let numSocio = prompt("Introduce el número de socio:");
   let nombre = prompt("Introduce el nombre:");
   let apellido = prompt("Introduce el apellido:");
@@ -275,13 +275,19 @@ function modifLector(numeroSocio) {
 }
 
 //Funciones de Libro
-function altaLibro() {
-  let codLibro = prompt("Introduce el codigo del libro:");
-  let isbn = prompt("Introduce el isbn:");
-  let autor = prompt("Introduce el autor:");
-  let titulo = prompt("Introduce el titulo:");
-  let editorial = prompt("Introduce la editorial:");
-  let ejemplares = prompt("Introduce los ejemplares:");
+function altaLibro(
+  isbnLibro,
+  autorLibro,
+  tituloLibro,
+  editorialLibro,
+  numeroEjemplares
+) {
+  let codLibro = listaLibros[listaLibros.length - 1].codLibro;
+  let isbn = isbnLibro;
+  let autor = autorLibro;
+  let titulo = tituloLibro;
+  let editorial = editorialLibro;
+  let ejemplares = numeroEjemplares;
 
   if (
     codLibro != "" &&
