@@ -1,16 +1,20 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Biblioteca</title>
-
+    <title>Home</title>
     <style>
       table,
       td,
       th {
         border-spacing: 0px;
         border: 1px solid black;
+      }
+    </style>
+    <style>
+      button {
+        border: 1px solid black;
+        padding: 5px 5px;
+        margin: 15px 5px 20px 25px;
       }
     </style>
   </head>
@@ -43,9 +47,9 @@
         </thead>
         <tbody></tbody>
       </table>
-      <button id="vista-libros-boton">Actualizar vista</button>
+      <button id="vista-libros-boton">Actualizar libros</button>
     </section>
-    <section id="alta-lector">
+    <section id="vista-lectores">
       <h2>Vista lectores</h2>
       <table id="comprobar-lectores-tabla">
         <thead>
@@ -59,12 +63,12 @@
         </thead>
         <tbody></tbody>
       </table>
-      <button id="comprobar-lectores-boton">Actualizar</button>
+      <button id="comprobar-lectores-boton">Actualizar lectores</button>
     </section>
     <section id="alta-libro">
-      <h2>Alta Libros</h2>
+      <h2>Alta Libro</h2>
       <div>
-        <label>ISBN:</label>
+        <label>ISBN: </label>
         <input
           type="text"
           placeholder="Introduce el ISBN..."
@@ -72,7 +76,7 @@
         />
       </div>
       <div>
-        <label>Autor:</label>
+        <label>Autor: </label>
         <input
           type="text"
           placeholder="Introduce el autor..."
@@ -80,7 +84,7 @@
         />
       </div>
       <div>
-        <label>Título:</label>
+        <label>Título: </label>
         <input
           type="text"
           placeholder="Introduce el título..."
@@ -88,7 +92,7 @@
         />
       </div>
       <div>
-        <label>Editorial:</label>
+        <label>Editorial: </label>
         <input
           type="text"
           placeholder="Introduce la editorial..."
@@ -96,7 +100,7 @@
         />
       </div>
       <div>
-        <label>Ejemplares:</label>
+        <label>Ejemplares: </label>
         <input
           type="number"
           step="1"
@@ -109,7 +113,7 @@
     <section id="devolucion-prestamo">
       <h2>Devolución/Préstamo de libros</h2>
       <div>
-        <label>Nº de socio:</label>
+        <label>Nº de socio: </label>
         <input
           type="text"
           placeholder="Introduce el nº de socio..."
@@ -117,7 +121,7 @@
         />
       </div>
       <div>
-        <label>Código de libro:</label>
+        <label>Código de libro: </label>
         <input
           type="text"
           placeholder="Introduce el código de libro..."
@@ -127,6 +131,9 @@
       <button id="devolucion-boton">Devolución</button>
       <button id="prestamo-boton">Préstamo</button>
     </section>
-    <script src="GestiónBiblioteca.js"></script>
+    <script src="GestiónBiblioteca.js">
+
+/*Usar addEventListener() para que al hacer click en el boton de importar, se importen los fichero*/
+    </script>
   </body>
 </html>
