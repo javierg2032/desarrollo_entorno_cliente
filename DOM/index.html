@@ -3,18 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="DOM.js"></script>
-    <title>Analizando el DOM (Document Object Model)</title>
+    <title>Ejercicios Practicando DOM</title>
+    <style>
+      #p1 {
+        background-color: rgb(112, 228, 228);
+      }
+      #p2 {
+        background-color: rgb(228, 112, 112);
+      }
+      #p3 {
+        background-color: rgb(122, 228, 112);
+      }
+      #p4 {
+        background-color: rgb(211, 228, 112);
+      }
+    </style>
   </head>
   <body>
-    <nav>
-      <a href="#">Enlace 1</a>
-    </nav>
-    <section>
-      <h1>Primeros pasos</h1>
-      <p>Lorem ipsum dolor sit amet...</p>
-    </section>
-
     <div id="div">
       <p id="p1">Ay</p>
       <p id="p2">Mi</p>
@@ -23,32 +28,6 @@
 
     <p id="p4"></p>
 
-    <script>
-      let p1 = document.getElementById("p1");
-      let p2 = document.getElementById("p2");
-      let p3 = document.getElementById("p3");
-      let div = document.getElementById("div");
-      let p4 = document.getElementById("p4");
-      const parrafosDiv = div.querySelectorAll("p");
-
-      p1.addEventListener("click", function (event) {
-        alert("Has hecho click en el P1");
-      });
-      p2.addEventListener("click", function (event) {
-        alert("Has hecho click en el P2");
-      });
-      p3.addEventListener("click", function (event) {
-        alert("Has hecho click en el P3");
-      });
-      div.addEventListener("click", function (event) {
-        alert("Has hecho click en el DIV");
-      });
-
-      for (let p of parrafosDiv) {
-        p.addEventListener("click", function (event) {
-          p4.innerText = p.innerHTML;
-        });
-      }
-    </script>
+    <script src="DOM.js"></script>
   </body>
 </html>
