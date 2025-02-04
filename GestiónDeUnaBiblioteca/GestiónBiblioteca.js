@@ -25,6 +25,9 @@ document
       };
       readerLectores.readAsText(fileLectores);
     }
+    //Cuando se importan los ficheros, se limpian los campos de importación
+    document.getElementById("importar-input-libros").value = "";
+    document.getElementById("importar-input-lectores").value = "";
   });
 
 // Procesar CSV
@@ -470,3 +473,51 @@ function devolucionPrestamos(codigoIsbn, numPrestamo) {
     }
   }
 }
+
+//Debe comprobar que cumple los requisitos (cualquier letra del alfabeto español (con o sin acento en las vocales) y en caso de ser 2 palabras, estar separados por "-")
+function compruebaNombreApellido(texto) {
+  const nombreApellidoValido = /^[a-zA-ZáéíóúÁÉÍÓÚ]+(-[a-zA-ZáéíóúÁÉÍÓÚ]+)?$/; //Compruebo que este compuesta por una o dos palabras separadas por un guion, que esta compuesto por cualquier letra y las vocales puedan tener acentos
+  return nombreApellidoValido.test(texto); //Devuelvo el resultado de comprobar si el texto que se le da a la funcion cumple los requisitos de nombreApellidoValido
+}
+
+//Al hacer click sobre el botón Actualizar libros, se mostrará en la vista (una tabla con id vista-libros-tabla) los libros que hay en la biblioteca (Es decir el array de listaLibros)
+document
+  .getElementById("vista-libros-boton")
+  .addEventListener("click", function () {
+    document.getElementById("vista-libros").querySelector("tbody").innerHTML =
+      "";
+    for (let libro in listaLibros) {
+      document
+        .getElementById("vista-libros")
+        .querySelector("tbody").innerHTML += `
+      <tr>
+        <td>${listaLibros[libro].codLibro}</td>
+        <td>${listaLibros[libro].isbn}</td>
+        <td>${listaLibros[libro].autor}</td>
+        <td>${listaLibros[libro].titulo}</td>
+        <td>${listaLibros[libro].editorial}</td>
+        <td>${listaLibros[libro].ejemplares}</td>
+      </tr>`;
+    }
+  });
+
+//Al hacer click sobre el botón Actualizar lectores, se mostrará en la vista los lectores que hay en la biblioteca (Es decir el array de listaLectores)
+document
+  .getElementById("comprobar-lectores-boton")
+  .addEventListener("click", function () {
+    document
+      .getElementById("comprobar-lectores-tabla")
+      .querySelector("tbody").innerHTML = "";
+    for (let lector in listaLectores) {
+      document
+        .getElementById("comprobar-lectores-tabla")
+        .querySelector("tbody").innerHTML += `
+      <tr>
+        <td>${listaLectores[lector].numSocio}</td>
+        <td>${listaLectores[lector].nombre}</td>
+        <td>${listaLectores[lector].apellido}</td>
+        <td>${listaLectores[lector].telefono}</td>
+        <td>${listaLectores[lector].email}</td>
+      </tr>`;
+    }
+  });
