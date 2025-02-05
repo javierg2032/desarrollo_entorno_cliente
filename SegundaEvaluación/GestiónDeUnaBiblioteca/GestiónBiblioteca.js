@@ -51,6 +51,8 @@ function processCSV(text, tipoFichero) {
         new Lector(celda[0], celda[1], celda[2], celda[3], celda[4])
       );
     }
+
+    listaLectores.sort((a, b) => a.numSocio - b.numSocio); //Ordeno los lectores por el numero de socio de mayor a menor
     console.log(listaLectores);
   } else if (tipoFichero === "libros") {
     for (let celda of fichero) {
@@ -58,7 +60,20 @@ function processCSV(text, tipoFichero) {
         new Libro(celda[0], celda[1], celda[2], celda[3], celda[4], celda[5])
       );
     }
+    listaLibros.sort((a, b) => a.codLibro - b.codLibro); //Ordeno los libros por el codigo de libro de mayor a menor
+
     console.log(listaLibros);
+  }
+
+  for (let lector of listaLectores) {
+    comprobarEmail(lector.email, lector.nombre, lector.apellido);
+    comprobarTelefono(lector.telefono, lector.nombre, lector.apellido);
+  }
+  if (listaCorreosInvalidos.length > 0) {
+    console.log(listaCorreosInvalidos);
+  }
+  if (listaTelefonosInvalidos.length > 0) {
+    console.log(listaTelefonosInvalidos);
   }
 }
 
@@ -112,12 +127,22 @@ const listadoPrestamosVivos = [];
 
 //Funciones de Lector
 function altaLector() {
+  /*La función devolverá:
+    numSocio – Si el alta ha sido correcta
+    F – Si falta algún dato
+    V – Si hay algún dato con formato incorrecto*/
   //numSocio debe generarse automaticamente sin repetirse con algun numSocio existente
-  let numSocio = prompt("Introduce el número de socio:");
+  let resultado = "F"; //Inicializo el resultado a F
+  let numSocio =
+    parseInt(listaLectores[listaLectores.length - 1].numSocio) +
+    1; /*Convierto el numero de socio del ultimo indice del array en un entero 
+  para porder sumarle 1 de forma que el numero de socio sea el siguiente al ultimo*/
   let nombre = prompt("Introduce el nombre:");
   let apellido = prompt("Introduce el apellido:");
   let telefono = prompt("Introduce el teléfono:");
   let email = prompt("Introduce el email:");
+  numSocio =
+    numSocio.toString(); /*Convierto de nuevo el numero de socio en una cadena de texto para que cumpla con los requisitos del enunciado*/
 
   if (
     numSocio != "" &&
@@ -133,13 +158,17 @@ function altaLector() {
       listaLectores.push(
         new Lector(numSocio, nombre, apellido, telefono, email)
       );
-      alert("Lector añadido correctamente");
+      console.log("Lector añadido correctamente");
+      resultado = numSocio;
+      console.log(listaLectores);
     } else {
-      alert(
+      console.log(
         "No se ha podido añadir el lector debido a que el email o el teléfono no son válidos"
       );
+      resultado = "V";
     }
   }
+  return resultado;
 }
 
 function bajaLector(numeroSocio) {
@@ -148,7 +177,12 @@ function bajaLector(numeroSocio) {
   for (let lector in listaLectores) {
     if (listaLectores[lector].numSocio == numeroSocioString) {
       listaLectores[lector].bajaLector = true;
-      listaLectores[lector].fechaBaja = new Date();
+      const fecha = new Date();
+      const dia = String(fecha.getDate()).padStart(2, "0"); //padStart indica la longitud que debe tener y en caso de ser menor, añade un 0 a la izquierda
+      const mes = String(fecha.getMonth() + 1).padStart(2, "0"); //en javascript los meses empiezan en 0, por eso le sumo 1
+      const anyo = fecha.getFullYear();
+      const fechaFormateada = `${dia}/${mes}/${anyo}`;
+      listaLectores[lector].fechaBaja = fechaFormateada;
       estadoBaja = true;
       break;
     }
@@ -166,18 +200,20 @@ function comprobarEmail(emailLector, nombreLector, apellidoLector) {
   const emailValido = new RegExp(
     `^\\w+([.-_+]?\\w+)*@\\w+([.-]?\\w+)*(\\.(${dominios}))+$`
   );
+  let valido = true;
 
   if (!emailValido.test(emailLector)) {
-    /*Compruebo si el lector existe para añadirlo a la lista de correos invalidos, si no existe 
-    (es decir que se esta llamando a la función a la hora de dar de alta un nuevo lector) 
-    devuelvo false pero sin añadirlo a la lista de no validos*/
-
+    /*En caso de que emailValido sea false (no coinciden los requisitos de emailLector con la expresion regular de emailValido)*/
+    valido = false;
     for (let lector in listaLectores) {
       if (
         listaLectores[lector].nombre == nombreLector &&
         listaLectores[lector].apellido == apellidoLector &&
         listaLectores[lector].email == emailLector
       ) {
+        /*Compruebo si el lector existe para añadirlo a la lista de correos invalidos, si no existe 
+    (es decir que se esta llamando a la función a la hora de dar de alta un nuevo lector) 
+    devuelvo false pero sin añadirlo a la lista de no validos*/
         listaCorreosInvalidos.push({
           nombreLector,
           apellidoLector,
@@ -185,14 +221,11 @@ function comprobarEmail(emailLector, nombreLector, apellidoLector) {
         });
       }
     }
-    return false;
   }
-  return true;
-}
-
-function comprobarEmailCreacion(emailLector, nombreLector, apellidoLector) {
-  comprobarEmail(emailLector, nombreLector, apellidoLector);
-  if (!comprobarEmail()) alert("Dirección de email inválida");
+  if (valido == false) {
+    alert("Dirección de email inválida");
+  }
+  return valido;
 }
 
 // Función para comprobar el teléfono
@@ -278,19 +311,18 @@ function modifLector(numeroSocio) {
 }
 
 //Funciones de Libro
-function altaLibro(
-  isbnLibro,
-  autorLibro,
-  tituloLibro,
-  editorialLibro,
-  numeroEjemplares
-) {
-  let codLibro = listaLibros[listaLibros.length - 1].codLibro;
+function altaLibro(autorLibro, tituloLibro, editorialLibro, numeroEjemplares) {
+  let codLibro =
+    parseInt(listaLibros[listaLibros.length - 1].codLibro) +
+    1; /*Convierto el codigo de libro del ultimo indice del array en un entero 
+    para porder sumarle 1 de forma que el codigo de libro sea el siguiente al ultimo*/
   let isbn = isbnLibro;
   let autor = autorLibro;
   let titulo = tituloLibro;
   let editorial = editorialLibro;
   let ejemplares = numeroEjemplares;
+  codLibro =
+    codLibro.toString(); /*Convierto de nuevo el codigo de libro en una cadena de texto para que cumpla con los requisitos del enunciado*/
 
   if (
     codLibro != "" &&
@@ -474,8 +506,6 @@ function devolucionPrestamos(codigoIsbn, numPrestamo) {
   }
 }
 
-
-
 //Debe comprobar que cumple los requisitos (cualquier letra del alfabeto español (con o sin acento en las vocales)
 // y en caso de ser 2 palabras, estar separados por "-")
 function compruebaNombreApellido(texto) {
@@ -484,9 +514,7 @@ function compruebaNombreApellido(texto) {
   return nombreApellidoValido.test(texto); //Devuelvo el resultado de comprobar si el texto que se le da a la funcion cumple los requisitos de nombreApellidoValido
 }
 
-
-
-//Al hacer click sobre el botón Actualizar libros, se mostrará en la vista (una tabla con id vista-libros-tabla) 
+//Al hacer click sobre el botón Actualizar libros, se mostrará en la vista (una tabla con id vista-libros-tabla)
 // los libros que hay en la biblioteca (Es decir el array de listaLibros)
 document
   .getElementById("vista-libros-boton")
@@ -508,7 +536,7 @@ document
     }
   });
 
-//Al hacer click sobre el botón Actualizar lectores, se mostrará en la vista los lectores que hay en la 
+//Al hacer click sobre el botón Actualizar lectores, se mostrará en la vista los lectores que hay en la
 // biblioteca (Es decir el array de listaLectores)
 document
   .getElementById("comprobar-lectores-boton")
