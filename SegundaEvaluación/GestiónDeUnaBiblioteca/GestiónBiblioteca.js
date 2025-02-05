@@ -474,13 +474,20 @@ function devolucionPrestamos(codigoIsbn, numPrestamo) {
   }
 }
 
-//Debe comprobar que cumple los requisitos (cualquier letra del alfabeto español (con o sin acento en las vocales) y en caso de ser 2 palabras, estar separados por "-")
+
+
+//Debe comprobar que cumple los requisitos (cualquier letra del alfabeto español (con o sin acento en las vocales)
+// y en caso de ser 2 palabras, estar separados por "-")
 function compruebaNombreApellido(texto) {
-  const nombreApellidoValido = /^[a-zA-ZáéíóúÁÉÍÓÚ]+(-[a-zA-ZáéíóúÁÉÍÓÚ]+)?$/; //Compruebo que este compuesta por una o dos palabras separadas por un guion, que esta compuesto por cualquier letra y las vocales puedan tener acentos
+  const nombreApellidoValido = /^[a-zA-ZáéíóúÁÉÍÓÚ]+(-[a-zA-ZáéíóúÁÉÍÓÚ]+)?$/; //Compruebo que este compuesta por una o dos palabras separadas
+  // por un guion, que esta compuesto por cualquier letra y que las vocales puedan tener acentos
   return nombreApellidoValido.test(texto); //Devuelvo el resultado de comprobar si el texto que se le da a la funcion cumple los requisitos de nombreApellidoValido
 }
 
-//Al hacer click sobre el botón Actualizar libros, se mostrará en la vista (una tabla con id vista-libros-tabla) los libros que hay en la biblioteca (Es decir el array de listaLibros)
+
+
+//Al hacer click sobre el botón Actualizar libros, se mostrará en la vista (una tabla con id vista-libros-tabla) 
+// los libros que hay en la biblioteca (Es decir el array de listaLibros)
 document
   .getElementById("vista-libros-boton")
   .addEventListener("click", function () {
@@ -501,7 +508,8 @@ document
     }
   });
 
-//Al hacer click sobre el botón Actualizar lectores, se mostrará en la vista los lectores que hay en la biblioteca (Es decir el array de listaLectores)
+//Al hacer click sobre el botón Actualizar lectores, se mostrará en la vista los lectores que hay en la 
+// biblioteca (Es decir el array de listaLectores)
 document
   .getElementById("comprobar-lectores-boton")
   .addEventListener("click", function () {
