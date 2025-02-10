@@ -64,16 +64,18 @@ function processCSV(text, tipoFichero) {
 
     console.log(listaLibros);
   }
-
-  for (let lector of listaLectores) {
-    comprobarEmail(lector.email, lector.nombre, lector.apellido);
-    comprobarTelefono(lector.telefono, lector.nombre, lector.apellido);
-  }
-  if (listaCorreosInvalidos.length > 0) {
-    console.log(listaCorreosInvalidos);
-  }
-  if (listaTelefonosInvalidos.length > 0) {
-    console.log(listaTelefonosInvalidos);
+  if (tipoFichero === "lectores") {
+    //Le pongo la condicion para que no se repita si importo el fichero de libros (que ya me ha ocurrido)
+    for (let lector of listaLectores) {
+      comprobarEmail(lector.email, lector.nombre, lector.apellido);
+      comprobarTelefono(lector.telefono, lector.nombre, lector.apellido);
+    }
+    if (listaCorreosInvalidos.length > 0) {
+      console.log(listaCorreosInvalidos);
+    }
+    if (listaTelefonosInvalidos.length > 0) {
+      console.log(listaTelefonosInvalidos);
+    }
   }
 }
 
@@ -215,9 +217,11 @@ function comprobarEmail(emailLector, nombreLector, apellidoLector) {
     (es decir que se esta llamando a la función a la hora de dar de alta un nuevo lector) 
     devuelvo false pero sin añadirlo a la lista de no validos*/
         listaCorreosInvalidos.push({
-          nombreLector,
-          apellidoLector,
-          emailLector,
+          numSocio: listaLectores[lector].numSocio, //Creo una propiedad en un objeto con una clave específica y le asigno el valor del Lector correspondiente
+          nombre: listaLectores[lector].nombre,
+          apellido: listaLectores[lector].apellido,
+          telefono: listaLectores[lector].telefono,
+          email: listaLectores[lector].email,
         });
       }
     }
@@ -246,9 +250,11 @@ function comprobarTelefono(telefonoLector, nombreLector, apellidoLector) {
         listaLectores[lector].telefono == telefonoLector
       ) {
         listaTelefonosInvalidos.push({
-          nombreLector,
-          apellidoLector,
-          telefonoLector,
+          numSocio: listaLectores[lector].numSocio,
+          nombre: listaLectores[lector].nombre,
+          apellido: listaLectores[lector].apellido,
+          telefono: listaLectores[lector].telefono,
+          email: listaLectores[lector].email,
         });
       }
     }
@@ -510,10 +516,11 @@ function devolucionPrestamos(codigoIsbn, numPrestamo) {
 // y en caso de ser 2 palabras, estar separados por "-")
 function compruebaNombreApellido(texto) {
   const nombreApellidoValido = /^[a-zA-ZáéíóúÁÉÍÓÚ]+(-[a-zA-ZáéíóúÁÉÍÓÚ]+)?$/; //Compruebo que este compuesta por una o dos palabras separadas
-  // por un guion, que esta compuesto por cualquier letra y que las vocales puedan tener acentos
+  // por un guion, que esta compuesto por cualquier letra (tanto Mayúsculas como Minúsculas) y que las vocales puedan tener acentos
   return nombreApellidoValido.test(texto); //Devuelvo el resultado de comprobar si el texto que se le da a la funcion cumple los requisitos de nombreApellidoValido
 }
 
+//INTERACCIONES CON EL DOM:
 //Al hacer click sobre el botón Actualizar libros, se mostrará en la vista (una tabla con id vista-libros-tabla)
 // los libros que hay en la biblioteca (Es decir el array de listaLibros)
 document
