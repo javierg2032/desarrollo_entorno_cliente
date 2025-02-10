@@ -1,9 +1,9 @@
-let p1 = document.getElementById("p1");
+/*let p1 = document.getElementById("p1");
 let p2 = document.getElementById("p2");
 let p3 = document.getElementById("p3");
 let div = document.getElementById("div");
 let p4 = document.getElementById("p4");
-const parrafosDiv = div.querySelectorAll("p");
+const parrafosDiv = div.querySelectorAll("p");*/
 
 //Click
 /* p1.addEventListener("click", function () {
@@ -32,39 +32,57 @@ const parrafosDiv = div.querySelectorAll("p");
   }*/
 
 //MouesEnter y MouseLeave
-for (let p of parrafosDiv) {
-  /*
-  if (p.id === "p1") {
-    p.addEventListener("moueseenter", function entraP1() {
-      console.log("Entra en P1");
-    });
-    p.addEventListener("moueseleave", function saleP1() {
-      console.log("Sale de P1");
-    });
-  } else {
-    if (p.id === "p2") {
-      p.addEventListener("moueseenter", function entraP2() {
-        console.log("Entra en P2");
-      });
-      p.addEventListener("moueseleave", function saleP2() {
-        console.log("Sale de P2");
-      });
-    } else {
-      if (p.id === "p3") {
-        p.addEventListener("moueseenter", function entraP3() {
-          console.log("Entra en P3");
-        });
-        p.addEventListener("moueseleave", function saleP3() {
-          console.log("Sale de P3");
-        });
-      }
-    }
-  }
-}*/
+/*for (let p of parrafosDiv) {
+
   p.addEventListener("mouseenter", function entraP() {
     console.log("Entra en " + p.id);
   });
   p.addEventListener("mouseleave", function saleP() {
     console.log("Sale de " + p.id);
   });
+}*/
+
+//CallBack es una funcion que se pasa como argumento o parametro a otra función
+//Sintaxis CallBack
+/*function operar(a, b, operacion) {
+  return operacion(a, b);
 }
+
+//Ejemplo
+function suma(a, b) {
+  return a + b;
+}
+
+function resta(a, b) {
+  return a - b;
+}
+
+function multiplicacion(a, b) {
+  return a * b;
+}
+
+function operar(a, b, suma) {
+  return suma(a, b);
+}
+
+function operar(a, b, resta) {
+  return resta(a, b);
+}
+function operar(a, b, multiplicacion) {
+  return multiplicacion(a, b);
+}*/
+
+/*Forma de trabajar Sincrona (es Bloqueante, es decir que, hasta que no termina lo que esta haciendo no pasa a la siguiente)
+ y Asincrona (puede seguir cualquier orden para hacer las cosas incluso sin haberlas terminado)*/
+
+/*a = x * 7;
+b = a + 6;
+c = x + a + 5;*/
+
+//Ejemplo setTimeout()
+
+const myTimeout = setTimeout(despues, 3000);
+function despues() {
+  console.log("Terminados los 3000 ms");
+}
+console.log("Hola");
