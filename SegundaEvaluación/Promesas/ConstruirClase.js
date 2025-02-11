@@ -1,0 +1,1 @@
+/*Promesa construirClase (tarda 5000 ms), despues de hacer eso, Promesa pintarClase (tarda 3000ms), despues de hacer eso, Promesa traerMuebles (tarda 2000 ms), al terminar TODAS las Promesas, imprimir "Obra Iniciada"*/
