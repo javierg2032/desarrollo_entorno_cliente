@@ -63,12 +63,12 @@ function processCSV(text, tipoFichero) {
     listaLibros.sort((a, b) => a.codLibro - b.codLibro); //Ordeno los libros por el codigo de libro de mayor a menor
 
     console.log(listaLibros);
-  }
+  } /*
   if (tipoFichero === "lectores") {
     //Le pongo la condicion para que no se repita si importo el fichero de libros (que ya me ha ocurrido)
     for (let lector of listaLectores) {
-      comprobarEmail(lector.email, lector.nombre, lector.apellido);
-      comprobarTelefono(lector.telefono, lector.nombre, lector.apellido);
+      comprobarEmails(lector.email, lector.nombre, lector.apellido);
+      comprobarTelefonos(lector.telefono, lector.nombre, lector.apellido);
     }
     if (listaCorreosInvalidos.length > 0) {
       console.log(listaCorreosInvalidos);
@@ -76,7 +76,7 @@ function processCSV(text, tipoFichero) {
     if (listaTelefonosInvalidos.length > 0) {
       console.log(listaTelefonosInvalidos);
     }
-  }
+  }*/
 }
 
 //Constructor Lector
@@ -154,8 +154,8 @@ function altaLector() {
     email != ""
   ) {
     if (
-      comprobarEmail(email, nombre, apellido) &&
-      comprobarTelefono(telefono, nombre, apellido)
+      verificarEmail(email) &&
+      verificarTelefono(telefono)
     ) {
       listaLectores.push(
         new Lector(numSocio, nombre, apellido, telefono, email)
@@ -197,43 +197,37 @@ function bajaLector(numeroSocio) {
 }
 
 // Función para comprobar el email
-function comprobarEmail(emailLector, nombreLector, apellidoLector) {
+//Implemento un Callback siguiendo la teoria vista en clase
+function comprobarEmails(verificarEmail) {
+  for (let lector in listaLectores) {
+    if (!verificarEmail(listaLectores[lector].email)) {
+      listaCorreosInvalidos.push({
+        numSocio: listaLectores[lector].numSocio, //Creo una propiedad en un objeto con una clave específica y le asigno el valor del Lector correspondiente
+        nombre: listaLectores[lector].nombre,
+        apellido: listaLectores[lector].apellido,
+        telefono: listaLectores[lector].telefono,
+        email: listaLectores[lector].email,
+      });
+    }
+  }
+}
+
+function verificarEmail(direccionEmail) {
   const dominios = listaDominiosValidos.join("|");
   const emailValido = new RegExp(
     `^\\w+([.-_+]?\\w+)*@\\w+([.-]?\\w+)*(\\.(${dominios}))+$`
   );
   let valido = true;
 
-  if (!emailValido.test(emailLector)) {
+  if (!emailValido.test(direccionEmail)) {
     /*En caso de que emailValido sea false (no coinciden los requisitos de emailLector con la expresion regular de emailValido)*/
     valido = false;
-    for (let lector in listaLectores) {
-      if (
-        listaLectores[lector].nombre == nombreLector &&
-        listaLectores[lector].apellido == apellidoLector &&
-        listaLectores[lector].email == emailLector
-      ) {
-        /*Compruebo si el lector existe para añadirlo a la lista de correos invalidos, si no existe 
-    (es decir que se esta llamando a la función a la hora de dar de alta un nuevo lector) 
-    devuelvo false pero sin añadirlo a la lista de no validos*/
-        listaCorreosInvalidos.push({
-          numSocio: listaLectores[lector].numSocio, //Creo una propiedad en un objeto con una clave específica y le asigno el valor del Lector correspondiente
-          nombre: listaLectores[lector].nombre,
-          apellido: listaLectores[lector].apellido,
-          telefono: listaLectores[lector].telefono,
-          email: listaLectores[lector].email,
-        });
-      }
-    }
-  }
-  if (valido == false) {
-    alert("Dirección de email inválida");
   }
   return valido;
 }
 
 // Función para comprobar el teléfono
-function comprobarTelefono(telefonoLector, nombreLector, apellidoLector) {
+function comprobarTelefonos(telefonoLector, nombreLector, apellidoLector) {
   const telefonoValido = /^[9|6|7][0-9]{8}$/; // Comienza por 9, 6 o 7 y tiene 8 dígitos despues del primero
 
   if (!telefonoValido.test(telefonoLector)) {
