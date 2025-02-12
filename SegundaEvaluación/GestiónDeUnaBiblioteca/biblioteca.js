@@ -54,6 +54,17 @@ function processCSV(text, tipoFichero) {
 
     listaLectores.sort((a, b) => a.numSocio - b.numSocio); //Ordeno los lectores por el numero de socio de mayor a menor
     console.log(listaLectores);
+
+    //Compruebo los emails y los telefonos de los lectores
+    comprobarEmails(verificarEmail);
+    comprobarTelefonos(verificarTelefono);
+
+    if (listaCorreosInvalidos.length > 0) {
+      console.log(listaCorreosInvalidos);
+    }
+    if (listaTelefonosInvalidos.length > 0) {
+      console.log(listaTelefonosInvalidos);
+    }
   } else if (tipoFichero === "libros") {
     for (let celda of fichero) {
       listaLibros.push(
@@ -63,20 +74,7 @@ function processCSV(text, tipoFichero) {
     listaLibros.sort((a, b) => a.codLibro - b.codLibro); //Ordeno los libros por el codigo de libro de mayor a menor
 
     console.log(listaLibros);
-  } /*
-  if (tipoFichero === "lectores") {
-    //Le pongo la condicion para que no se repita si importo el fichero de libros (que ya me ha ocurrido)
-    for (let lector of listaLectores) {
-      comprobarEmails(lector.email, lector.nombre, lector.apellido);
-      comprobarTelefonos(lector.telefono, lector.nombre, lector.apellido);
-    }
-    if (listaCorreosInvalidos.length > 0) {
-      console.log(listaCorreosInvalidos);
-    }
-    if (listaTelefonosInvalidos.length > 0) {
-      console.log(listaTelefonosInvalidos);
-    }
-  }*/
+  }
 }
 
 //Constructor Lector
@@ -146,17 +144,8 @@ function altaLector() {
   numSocio =
     numSocio.toString(); /*Convierto de nuevo el numero de socio en una cadena de texto para que cumpla con los requisitos del enunciado*/
 
-  if (
-    numSocio != "" &&
-    nombre != "" &&
-    apellido != "" &&
-    telefono != "" &&
-    email != ""
-  ) {
-    if (
-      verificarEmail(email) &&
-      verificarTelefono(telefono)
-    ) {
+  if (nombre != "" && apellido != "" && telefono != "" && email != "") {
+    if (verificarEmail(email) && verificarTelefono(telefono)) {
       listaLectores.push(
         new Lector(numSocio, nombre, apellido, telefono, email)
       );
@@ -191,14 +180,111 @@ function bajaLector(numeroSocio) {
   }
   if (estadoBaja == true) {
     alert("Lector dado de baja correctamente");
+    console.table(listaLectores);
   } else {
     alert("El número de socio introducido no coincide con el de ningún lector");
   }
 }
 
+function modifLector(numeroSocio) {
+  // Compruebo si el numSocio existe en la lista de lectores
+  let existeSocio = false;
+  for (let lector in listaLectores) {
+    if (listaLectores[lector].numSocio == numeroSocio) {
+      existeSocio = true; // Si existe, marco la bandera
+      break;
+    }
+  }
+
+  if (!existeSocio) {
+    alert("El número de socio no existe.");
+    return; // Salgo de la función si no existe el numSocio
+  }
+
+  let datoAModificar = prompt("Introduce el dato a modificar");
+
+  switch (datoAModificar) {
+    case "numSocio":
+      let numSocio = prompt("Introduce el nuevo numSocio:");
+
+      // Compruebo si el numSocio ya existe
+      let existe = false;
+      for (let lector in listaLectores) {
+        if (listaLectores[lector].numSocio == numSocio) {
+          existe = true; // Si ya existe, marco la bandera
+          break;
+        }
+      }
+
+      if (existe) {
+        alert("El número de socio ya existe");
+      } else {
+        // Si no existe, cambio el numSocio del lector correspondiente
+        for (let lector in listaLectores) {
+          if (listaLectores[lector].numSocio == numeroSocio) {
+            listaLectores[lector].numSocio = numSocio;
+            break; // Salgo del bucle después de hacer el cambio
+          }
+        }
+      }
+      break;
+
+    case "nombre":
+      let nombre = prompt("Introduce el nuevo nombre:");
+      for (let lector in listaLectores) {
+        if (listaLectores[lector].numSocio == numeroSocio) {
+          listaLectores[lector].nombre = nombre;
+          break; // Salgo del bucle después de hacer el cambio
+        }
+      }
+      break;
+
+    case "apellido":
+      let apellido = prompt("Introduce el nuevo apellido:");
+      for (let lector in listaLectores) {
+        if (listaLectores[lector].numSocio == numeroSocio) {
+          listaLectores[lector].apellido = apellido;
+          break; // Salgo del bucle después de hacer el cambio
+        }
+      }
+      break;
+
+    case "telefono":
+      let telefono = prompt("Introduce el nuevo teléfono:");
+      for (let lector in listaLectores) {
+        if (listaLectores[lector].numSocio == numeroSocio) {
+          listaLectores[lector].telefono = telefono;
+          break; // Salgo del bucle después de hacer el cambio
+        }
+      }
+      break;
+
+    case "email":
+      let email = prompt("Introduce el nuevo email:");
+      for (let lector in listaLectores) {
+        if (listaLectores[lector].numSocio == numeroSocio) {
+          listaLectores[lector].email = email;
+          break; // Salgo del bucle después de hacer el cambio
+        }
+      }
+      break;
+
+    default:
+      alert("Dato no válido.");
+      return;
+  }
+  alert("Lector modificado correctamente");
+  listaLectores.sort((a, b) => a.numSocio - b.numSocio);
+}
+
+//COMPROBACIONES LECTOR
+
 // Función para comprobar el email
 //Implemento un Callback siguiendo la teoria vista en clase
 function comprobarEmails(verificarEmail) {
+  /*Compruebo si el lector existe para añadirlo a la lista de email invalidos, si no existe 
+    (es decir que se esta llamando a la función a la hora de dar de alta un nuevo lector) 
+    no lo añado a la lista de no validos (debido a que si algun campo a la hora de dar de alta un cliente es erroneo, no deberia poder crearse)*/
   for (let lector in listaLectores) {
     if (!verificarEmail(listaLectores[lector].email)) {
       listaCorreosInvalidos.push({
@@ -212,246 +298,257 @@ function comprobarEmails(verificarEmail) {
   }
 }
 
+// Función para comprobar el teléfono
+function comprobarTelefonos(verificarTelefono) {
+  /*Compruebo si el lector existe para añadirlo a la lista de telefonos invalidos, si no existe 
+    (es decir que se esta llamando a la función a la hora de dar de alta un nuevo lector) 
+   no lo añado a la lista de no validos (debido a que si algun campo a la hora de dar de alta un cliente es erroneo, no deberia poder crearse)*/
+  for (let lector in listaLectores) {
+    if (!verificarTelefono(listaLectores[lector].telefono)) {
+      listaTelefonosInvalidos.push({
+        numSocio: listaLectores[lector].numSocio,
+        nombre: listaLectores[lector].nombre,
+        apellido: listaLectores[lector].apellido,
+        telefono: listaLectores[lector].telefono,
+        email: listaLectores[lector].email,
+      });
+    }
+  }
+}
+
+//VERIFICACIONES LECTOR
+
 function verificarEmail(direccionEmail) {
-  const dominios = listaDominiosValidos.join("|");
+  const dominios = listaDominiosValidos.join("|"); /*es|com|org|net|eu*/
   const emailValido = new RegExp(
     `^\\w+([.-_+]?\\w+)*@\\w+([.-]?\\w+)*(\\.(${dominios}))+$`
   );
-  let valido = true;
 
   if (!emailValido.test(direccionEmail)) {
     /*En caso de que emailValido sea false (no coinciden los requisitos de emailLector con la expresion regular de emailValido)*/
-    valido = false;
-  }
-  return valido;
-}
-
-// Función para comprobar el teléfono
-function comprobarTelefonos(telefonoLector, nombreLector, apellidoLector) {
-  const telefonoValido = /^[9|6|7][0-9]{8}$/; // Comienza por 9, 6 o 7 y tiene 8 dígitos despues del primero
-
-  if (!telefonoValido.test(telefonoLector)) {
-    alert("Número de teléfono inválido");
-
-    /*Compruebo si el lector existe para añadirlo a la lista de telefonos invalidos, si no existe 
-    (es decir que se esta llamando a la función a la hora de dar de alta un nuevo lector) 
-    devuelvo false pero sin añadirlo a la lista de no validos*/
-
-    for (let lector in listaLectores) {
-      if (
-        listaLectores[lector].nombre == nombreLector &&
-        listaLectores[lector].apellido == apellidoLector &&
-        listaLectores[lector].telefono == telefonoLector
-      ) {
-        listaTelefonosInvalidos.push({
-          numSocio: listaLectores[lector].numSocio,
-          nombre: listaLectores[lector].nombre,
-          apellido: listaLectores[lector].apellido,
-          telefono: listaLectores[lector].telefono,
-          email: listaLectores[lector].email,
-        });
-      }
-    }
     return false;
+  } else {
+    return true;
   }
-  return true;
 }
 
-function modifLector(numeroSocio) {
-  let datoAModificar = prompt("Introduce el dato a modificar");
-  switch (datoAModificar) {
-    case "numSocio":
-      let numSocio = prompt("Introduce el nombre:");
-      for (let lector in listaLectores) {
-        if (listaLectores[lector].numSocio == numeroSocio) {
-          for (let lector in listaLectores) {
-            if (listaLectores[lector].numSocio == numeroSocio) {
-              alert("El número de socio ya existe");
-            } else {
-              listaLectores[lector].numSocio = numSocio;
-            }
-          }
-        }
-      }
-      break;
-    case "nombre":
-      let nombre = prompt("Introduce el nombre:");
-      for (let lector in listaLectores) {
-        if (listaLectores[lector].numSocio == numeroSocio) {
-          listaLectores[lector].nombre = nombre;
-        }
-      }
-      break;
-    case "apellido":
-      let apellido = prompt("Introduce el apellido:");
-      for (let lector in listaLectores) {
-        if (listaLectores[lector].numSocio == numeroSocio) {
-          listaLectores[lector].apellido = apellido;
-        }
-      }
-      break;
-    case "telefono":
-      let telefono = prompt("Introduce el telefono:");
-      for (let lector in listaLectores) {
-        if (listaLectores[lector].numSocio == numeroSocio) {
-          listaLectores[lector].telefono = telefono;
-        }
-      }
-      break;
-    case "email":
-      let email = prompt("Introduce el email:");
-      for (let lector in listaLectores) {
-        if (listaLectores[lector].numSocio == numeroSocio) {
-          listaLectores[lector].email = email;
-        }
-      }
-      break;
+function verificarTelefono(numeroTelefono) {
+  const telefonoValido = /^[9|6|7][0-9]{8}$/; // Comienza por 9, 6 o 7 y tiene 8 dígitos despues del primero
+  if (!telefonoValido.test(numeroTelefono)) {
+    return false;
+  } else {
+    return true;
   }
-  alert("Lector modificado correctamente");
 }
 
-//Funciones de Libro
-function altaLibro(autorLibro, tituloLibro, editorialLibro, numeroEjemplares) {
+//FUNCIONES DE LIBRO
+function altaLibro(
+  isbnLibro,
+  autorLibro,
+  tituloLibro,
+  editorialLibro,
+  numeroEjemplares
+) {
   let codLibro =
     parseInt(listaLibros[listaLibros.length - 1].codLibro) +
-    1; /*Convierto el codigo de libro del ultimo indice del array en un entero 
-    para porder sumarle 1 de forma que el codigo de libro sea el siguiente al ultimo*/
+    1; /*Convierto el código de libro del último índice del array en un entero 
+    para poder sumarle 1 de forma que el código de libro sea el siguiente al último*/
+
   let isbn = isbnLibro;
   let autor = autorLibro;
   let titulo = tituloLibro;
   let editorial = editorialLibro;
-  let ejemplares = numeroEjemplares;
+  let ejemplares = parseInt(numeroEjemplares); //Convierto el número de ejemplares en un entero
+
   codLibro =
-    codLibro.toString(); /*Convierto de nuevo el codigo de libro en una cadena de texto para que cumpla con los requisitos del enunciado*/
+    codLibro.toString(); /*Convierto de nuevo el código de libro en una cadena de texto para que cumpla con los requisitos del enunciado*/
 
-  if (
-    codLibro != "" &&
-    isbn != "" &&
-    autor != "" &&
-    titulo != "" &&
-    editorial != "" &&
-    ejemplares != ""
-  ) {
-    listaLibros.push(
-      new Libro(codLibro, isbn, autor, titulo, editorial, ejemplares)
-    );
-    alert("Libro añadido correctamente");
-  }
-}
-
-function bajaLibro(codigoLibro) {
-  for (let libro in listaLibros) {
-    if (listaLibros[libro].codLibro == codigoLibro) {
-      listaLibros[libro].bajaLibro = true;
-      listaLibros[libro].fechaBaja = new Date();
+  if (isbn != "" && autor != "" && titulo != "" && editorial != "") {
+    if (ejemplares <= 0 || ejemplares > 9) {
+      alert("El número de ejemplares debe ser mayor que 0 y menor que 10");
     } else {
-      alert(
-        "El código de libro introducido no coincide con el de ningún libro"
+      listaLibros.push(
+        new Libro(codLibro, isbn, autor, titulo, editorial, ejemplares)
       );
+      alert("Libro añadido correctamente");
     }
   }
 }
 
+function bajaLibro(codigoLibro) {
+  let codigoLibroString = codigoLibro.toString();
+  let estadoBaja = false;
+  for (let libro in listaLibros) {
+    if (listaLibros[libro].codLibro == codigoLibroString) {
+      listaLibros[libro].bajaLibro = true;
+      const fecha = new Date();
+      const dia = String(fecha.getDate()).padStart(2, "0"); //padStart indica la longitud que debe tener y en caso de ser menor, añade un 0 a la izquierda
+      const mes = String(fecha.getMonth() + 1).padStart(2, "0"); //en javascript los meses empiezan en 0, por eso le sumo 1
+      const anyo = fecha.getFullYear();
+      const fechaFormateada = `${dia}/${mes}/${anyo}`;
+      listaLibros[libro].fechaBaja = fechaFormateada;
+      estadoBaja = true;
+      break;
+    }
+  }
+  if (estadoBaja == true) {
+    alert("Libro dado de baja correctamente");
+    console.table(listaLectores);
+  } else {
+    alert("El código de libro introducido no coincide con el de ningún libro");
+  }
+}
+
 function modifLibro(codigoLibro) {
+  // Compruebo si el codLibro existe en la lista de libros
+  let existeLibro = false;
+  for (let libro in listaLibros) {
+    if (listaLibros[libro].codLibro == codigoLibro) {
+      existeLibro = true; // Si existe, marco la bandera
+      break;
+    }
+  }
+
+  if (!existeLibro) {
+    alert("El código de libro no existe.");
+    return; // Salgo de la función si no existe el codLibro
+  }
+
   let datoAModificar = prompt("Introduce el dato a modificar");
+
   switch (datoAModificar) {
     case "codLibro":
-      let codLibro = prompt("Introduce el codigo de libro:");
+      let codLibro = prompt("Introduce el nuevo código de libro:");
+
+      // Compruebo si el codLibro ya existe
+      let existe = false;
       for (let libro in listaLibros) {
-        if (listaLibros[libro].codLibro == codigoLibro) {
-          for (let libro in listaLibros) {
-            if (listaLibros[libro].codLibro == codigoLibro) {
-              alert("El código de libro ya existe");
-            } else {
-              listaLibros[libro].codLibro = codLibro;
-            }
+        if (listaLibros[libro].codLibro == codLibro) {
+          existe = true; // Si ya existe, marco la bandera
+          break;
+        }
+      }
+
+      if (existe) {
+        alert("El código de libro ya existe");
+      } else {
+        // Si no existe, cambio el codLibro del libro correspondiente
+        for (let libro in listaLibros) {
+          if (listaLibros[libro].codLibro == codigoLibro) {
+            listaLibros[libro].codLibro = codLibro;
+            break; // Salgo del bucle después de hacer el cambio
           }
         }
       }
       break;
+
     case "isbn":
-      let isbn = prompt("Introduce el isbn:");
+      let isbn = prompt("Introduce el nuevo isbn:");
       for (let libro in listaLibros) {
         if (listaLibros[libro].codLibro == codigoLibro) {
           listaLibros[libro].isbn = isbn;
+          break; // Salgo del bucle después de hacer el cambio
         }
       }
       break;
+
     case "autor":
-      let autor = prompt("Introduce el autor:");
+      let autor = prompt("Introduce el nuevo autor:");
       for (let libro in listaLibros) {
         if (listaLibros[libro].codLibro == codigoLibro) {
           listaLibros[libro].autor = autor;
+          break; // Salgo del bucle después de hacer el cambio
         }
       }
       break;
+
     case "titulo":
-      let titulo = prompt("Introduce el titulo:");
+      let titulo = prompt("Introduce el nuevo título:");
       for (let libro in listaLibros) {
         if (listaLibros[libro].codLibro == codigoLibro) {
           listaLibros[libro].titulo = titulo;
+          break; // Salgo del bucle después de hacer el cambio
         }
       }
       break;
+
     case "editorial":
-      let editorial = prompt("Introduce el editorial:");
+      let editorial = prompt("Introduce la nueva editorial:");
       for (let libro in listaLibros) {
         if (listaLibros[libro].codLibro == codigoLibro) {
           listaLibros[libro].editorial = editorial;
+          break; // Salgo del bucle después de hacer el cambio
         }
       }
       break;
 
     case "ejemplares":
-      let ejemplares = prompt("Introduce el ejemplares:");
+      let ejemplares = prompt("Introduce el nuevo número de ejemplares:");
+      ejemplares = parseInt(ejemplares);
+
+      // Validación para el número de ejemplares
+      if (ejemplares < 0 || ejemplares > 9) {
+        alert(
+          "El número de ejemplares debe ser mayor o igual a 0 y menor o igual a 9."
+        );
+        return; // Salgo de la función si la validación no pasa
+      }
+
       for (let libro in listaLibros) {
         if (listaLibros[libro].codLibro == codigoLibro) {
           listaLibros[libro].ejemplares = ejemplares;
+          break; // Salgo del bucle después de hacer el cambio
         }
       }
       break;
+
+    default:
+      alert("Dato no válido.");
+      return;
   }
+
   alert("Libro modificado correctamente");
+  listaLibros.sort((a, b) => a.codLibro - b.codLibro); // Ordeno la lista de libros por código
 }
 
-function hayLibro(codigoIsbn, nombreAutor, tituloLibro) {
+function hayLibro(codigoLibro) {
   for (let libro in listaLibros) {
-    if (
-      listaLibros[libro].isbn == codigoIsbn &&
-      listaLibros[libro].autor == nombreAutor &&
-      listaLibros[libro].titulo == tituloLibro
-    ) {
-      return listaLibros[libro];
-    } else return Error;
+    if (libro.codLibro === codigoLibro) {
+      return true; // Si encuentro el libro, devuelvo true
+    }
   }
+  return false; // Si no encuentro el libro, devuelvo false
 }
 
 function prestamoLibro(codigoLibro) {
   let prestado = false;
+
+  // Recorro la lista de libros para buscar el libro con el código proporcionado
   for (let libro in listaLibros) {
-    if (listaLibros[libro].codLibro == codigoLibro) {
-      if (listaLibros[libro].ejemplares > 0) {
-        listaLibros[libro].estado = "Prestado";
-        prestado = true;
+    if (libro.codLibro == codigoLibro) {
+      if (libro.ejemplares > 0) {
+        // Si hay ejemplares disponibles, hago el préstamo
+        libro.estado = "Prestado"; // Cambio el estado del libro
+        libro.ejemplares = parseInt(libro.ejemplares) - 1; // Resto 1 al número de ejemplares
+        libro.ejemplares = libro.ejemplares.toString(); // Aseguro que el valor vuelva a ser cadena de texto
 
-        if (prestado) {
-          //Lo convierto en un entero para poder restarle 1
-          listaLibros[libro].ejemplares =
-            parseInt(listaLibros[libro].ejemplares) - 1;
-
-          //Vuelvo a convertirlo en cadena para que no haya problemas al volver a llamar a la funcion
-          listaLibros[libro].ejemplares =
-            listaLibros[libro].ejemplares.toString();
-        }
+        prestado = true; // Indico que el préstamo fue exitoso
+        break; // Salgo del bucle porque ya se ha procesado el préstamo
       } else {
-        alert(
-          "No hay suficientes ejemplares disponibles para realizar el prestamo"
-        );
+        alert("No hay suficientes ejemplares disponibles para realizar el préstamo");
+        break; // Salgo del bucle si no hay ejemplares disponibles
       }
     }
   }
-  return prestado;
+
+  // Si no se encontró el libro, se devuelve false
+  if (!prestado) {
+    alert("El libro con el código proporcionado no existe.");
+  }
+
+  return prestado; // Devuelvo true si se prestó el libro, o false en caso contrario
 }
+
 
 function solicitudPrestamo(codLibro, numSocio) {
   prestamoLibro(codLibro);
