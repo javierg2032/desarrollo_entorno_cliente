@@ -1,8 +1,15 @@
 // Recibir Fichero de Libros
 
-document
+/*document
   .getElementById("importar-boton")
   .addEventListener("click", function () {
+    if (
+      document.getElementById("importar-input-libros").value == "" &&
+      document.getElementById("importar-input-lectores").value == ""
+    ) {
+      p.remove();
+    }
+
     const fileLibros = document.getElementById("importar-input-libros")
       .files[0];
     const fileLectores = document.getElementById("importar-input-lectores")
@@ -25,9 +32,95 @@ document
       };
       readerLectores.readAsText(fileLectores);
     }
+
+    //Si se ha importado de forma correcta, añadir un parrafo que indique "Importacion Exitosa"
+    let seccionImportar = document.getElementById("importar");
+    let p = document.createElement("p");
+    p.innerText = "Importacion Exitosa!";
+    seccionImportar.appendChild(p);
+
     //Cuando se importan los ficheros, se limpian los campos de importación
     document.getElementById("importar-input-libros").value = "";
     document.getElementById("importar-input-lectores").value = "";
+  });*/
+
+document
+  .getElementById("importar-boton")
+  .addEventListener("click", function () {
+    let seccionImportar = document.getElementById("importar");
+    let mensajeExistente = document.getElementById("mensaje-importacion");
+
+    // Si el mensaje ya existe, lo elimino antes de importar
+    if (mensajeExistente) {
+      mensajeExistente.remove();
+    }
+
+    const fileLibros = document.getElementById("importar-input-libros")
+      .files[0];
+    const fileLectores = document.getElementById("importar-input-lectores")
+      .files[0];
+
+    // Si no hay archivos seleccionados, salgo de la función
+    if (!fileLibros && !fileLectores) {
+      return;
+    }
+
+    let errorOImportacionExitosa = false;
+
+    // Si hay un archivo de libros, lo leo y proceso
+    if (fileLibros) {
+      const readerLibros = new FileReader();
+      readerLibros.onload = function (e) {
+        const text = e.target.result;
+        processCSV(text, "libros");
+      };
+      readerLibros.onerror = function () {
+        errorOImportacionExitosa = true;
+        mostrarMensajeError("Error al leer el archivo de libros.");
+      };
+      readerLibros.readAsText(fileLibros);
+    }
+
+    // Si hay un archivo de lectores, lo leo y proceso
+    if (fileLectores) {
+      const readerLectores = new FileReader();
+      readerLectores.onload = function (e) {
+        const text = e.target.result;
+        processCSV(text, "lectores");
+      };
+      readerLectores.onerror = function () {
+        errorOImportacionExitosa = true;
+        mostrarMensajeError("Error al leer el archivo de lectores.");
+      };
+      readerLectores.readAsText(fileLectores);
+    }
+
+    // Si no hubo error, creo y muestro el mensaje de éxito
+    if (!errorOImportacionExitosa) {
+      mostrarMensajeExito("¡Importación Exitosa!");
+    }
+
+    // Limpio los campos de importación después de importar
+    document.getElementById("importar-input-libros").value = "";
+    document.getElementById("importar-input-lectores").value = "";
+
+    // Función para mostrar el mensaje de error
+    function mostrarMensajeError(mensaje) {
+      let p = document.createElement("p");
+      p.id = "mensaje-importacion";
+      p.innerText = mensaje;
+      p.style.color = "red";
+      seccionImportar.appendChild(p);
+    }
+
+    // Función para mostrar el mensaje de éxito
+    function mostrarMensajeExito(mensaje) {
+      let p = document.createElement("p");
+      p.id = "mensaje-importacion";
+      p.innerText = mensaje;
+      p.style.color = "green";
+      seccionImportar.appendChild(p);
+    }
   });
 
 // Procesar CSV
@@ -145,7 +238,12 @@ function altaLector() {
     numSocio.toString(); /*Convierto de nuevo el numero de socio en una cadena de texto para que cumpla con los requisitos del enunciado*/
 
   if (nombre != "" && apellido != "" && telefono != "" && email != "") {
-    if (verificarEmail(email) && verificarTelefono(telefono)) {
+    if (
+      verificarEmail(email) &&
+      verificarTelefono(telefono) &&
+      compruebaNombreApellidoAutorEditorial(nombre) &&
+      compruebaNombreApellidoAutorEditorial(apellido)
+    ) {
       listaLectores.push(
         new Lector(numSocio, nombre, apellido, telefono, email)
       );
@@ -223,6 +321,7 @@ function modifLector(numeroSocio) {
         for (let lector in listaLectores) {
           if (listaLectores[lector].numSocio == numeroSocio) {
             listaLectores[lector].numSocio = numSocio;
+            alert("Lector modificado correctamente");
             break; // Salgo del bucle después de hacer el cambio
           }
         }
@@ -233,8 +332,14 @@ function modifLector(numeroSocio) {
       let nombre = prompt("Introduce el nuevo nombre:");
       for (let lector in listaLectores) {
         if (listaLectores[lector].numSocio == numeroSocio) {
-          listaLectores[lector].nombre = nombre;
-          break; // Salgo del bucle después de hacer el cambio
+          if (compruebaNombreApellidoAutorEditorial(nombre)) {
+            listaLectores[lector].nombre = nombre;
+            alert("Lector modificado correctamente");
+            break; // Salgo del bucle después de hacer el cambio
+          } else {
+            alert("El formato del nombre no es valido");
+            break;
+          }
         }
       }
       break;
@@ -243,8 +348,14 @@ function modifLector(numeroSocio) {
       let apellido = prompt("Introduce el nuevo apellido:");
       for (let lector in listaLectores) {
         if (listaLectores[lector].numSocio == numeroSocio) {
-          listaLectores[lector].apellido = apellido;
-          break; // Salgo del bucle después de hacer el cambio
+          if (compruebaNombreApellidoAutorEditorial(apellido)) {
+            listaLectores[lector].apellido = apellido;
+            alert("Lector modificado correctamente");
+            break; // Salgo del bucle después de hacer el cambio
+          } else {
+            alert("El formato del apellido no es valido");
+            break;
+          }
         }
       }
       break;
@@ -253,8 +364,14 @@ function modifLector(numeroSocio) {
       let telefono = prompt("Introduce el nuevo teléfono:");
       for (let lector in listaLectores) {
         if (listaLectores[lector].numSocio == numeroSocio) {
-          listaLectores[lector].telefono = telefono;
-          break; // Salgo del bucle después de hacer el cambio
+          if (verificarTelefono(telefono)) {
+            listaLectores[lector].telefono = telefono;
+            alert("Lector modificado correctamente");
+            break; // Salgo del bucle después de hacer el cambio
+          } else {
+            alert("El formato del telefono no es valido");
+            break;
+          }
         }
       }
       break;
@@ -263,8 +380,14 @@ function modifLector(numeroSocio) {
       let email = prompt("Introduce el nuevo email:");
       for (let lector in listaLectores) {
         if (listaLectores[lector].numSocio == numeroSocio) {
-          listaLectores[lector].email = email;
-          break; // Salgo del bucle después de hacer el cambio
+          if (verificarEmail(email)) {
+            listaLectores[lector].email = email;
+            alert("Lector modificado correctamente");
+            break; // Salgo del bucle después de hacer el cambio
+          } else {
+            alert("El formato del email no es valido");
+            break;
+          }
         }
       }
       break;
@@ -273,7 +396,7 @@ function modifLector(numeroSocio) {
       alert("Dato no válido.");
       return;
   }
-  alert("Lector modificado correctamente");
+
   listaLectores.sort((a, b) => a.numSocio - b.numSocio);
 }
 
@@ -375,7 +498,8 @@ function altaLibro(
   }
 }
 
-function bajaLibro(codigoLibro) {
+function bajaLibro() {
+  codigoLibro = prompt("Introduce el codigo del libro:");
   let codigoLibroString = codigoLibro.toString();
   let estadoBaja = false;
   for (let libro in listaLibros) {
@@ -535,7 +659,9 @@ function prestamoLibro(codigoLibro) {
         prestado = true; // Indico que el préstamo fue exitoso
         break; // Salgo del bucle porque ya se ha procesado el préstamo
       } else {
-        alert("No hay suficientes ejemplares disponibles para realizar el préstamo");
+        alert(
+          "No hay suficientes ejemplares disponibles para realizar el préstamo"
+        );
         break; // Salgo del bucle si no hay ejemplares disponibles
       }
     }
@@ -548,7 +674,6 @@ function prestamoLibro(codigoLibro) {
 
   return prestado; // Devuelvo true si se prestó el libro, o false en caso contrario
 }
-
 
 function solicitudPrestamo(codLibro, numSocio) {
   prestamoLibro(codLibro);
@@ -605,7 +730,7 @@ function devolucionPrestamos(codigoIsbn, numPrestamo) {
 
 //Debe comprobar que cumple los requisitos (cualquier letra del alfabeto español (con o sin acento en las vocales)
 // y en caso de ser 2 palabras, estar separados por "-")
-function compruebaNombreApellido(texto) {
+function compruebaNombreApellidoAutorEditorial(texto) {
   const nombreApellidoValido = /^[a-zA-ZáéíóúÁÉÍÓÚ]+(-[a-zA-ZáéíóúÁÉÍÓÚ]+)?$/; //Compruebo que este compuesta por una o dos palabras separadas
   // por un guion, que esta compuesto por cualquier letra (tanto Mayúsculas como Minúsculas) y que las vocales puedan tener acentos
   return nombreApellidoValido.test(texto); //Devuelvo el resultado de comprobar si el texto que se le da a la funcion cumple los requisitos de nombreApellidoValido
