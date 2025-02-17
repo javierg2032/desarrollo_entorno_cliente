@@ -241,8 +241,8 @@ function altaLector() {
     if (
       verificarEmail(email) &&
       verificarTelefono(telefono) &&
-      compruebaNombreApellidoAutorEditorial(nombre) &&
-      compruebaNombreApellidoAutorEditorial(apellido)
+      verificarNombreApellidoAutorEditorial(nombre) &&
+      verificarNombreApellidoAutorEditorial(apellido)
     ) {
       listaLectores.push(
         new Lector(numSocio, nombre, apellido, telefono, email)
@@ -332,7 +332,7 @@ function modifLector(numeroSocio) {
       let nombre = prompt("Introduce el nuevo nombre:");
       for (let lector in listaLectores) {
         if (listaLectores[lector].numSocio == numeroSocio) {
-          if (compruebaNombreApellidoAutorEditorial(nombre)) {
+          if (verificarNombreApellidoAutorEditorial(nombre)) {
             listaLectores[lector].nombre = nombre;
             alert("Lector modificado correctamente");
             break; // Salgo del bucle después de hacer el cambio
@@ -348,7 +348,7 @@ function modifLector(numeroSocio) {
       let apellido = prompt("Introduce el nuevo apellido:");
       for (let lector in listaLectores) {
         if (listaLectores[lector].numSocio == numeroSocio) {
-          if (compruebaNombreApellidoAutorEditorial(apellido)) {
+          if (verificarNombreApellidoAutorEditorial(apellido)) {
             listaLectores[lector].apellido = apellido;
             alert("Lector modificado correctamente");
             break; // Salgo del bucle después de hacer el cambio
@@ -486,15 +486,39 @@ function altaLibro(
   codLibro =
     codLibro.toString(); /*Convierto de nuevo el código de libro en una cadena de texto para que cumpla con los requisitos del enunciado*/
 
-  if (isbn != "" && autor != "" && titulo != "" && editorial != "") {
-    if (ejemplares <= 0 || ejemplares > 9) {
-      alert("El número de ejemplares debe ser mayor que 0 y menor que 10");
+  // Verifico que ninguno de los datos esté vacio
+  if (
+    isbn != "" &&
+    autor != "" &&
+    titulo != "" &&
+    editorial != "" &&
+    ejemplares != ""
+  ) {
+    ejemplares = parseInt(ejemplares); // Convierto el número de ejemplares a entero
+    // Verifico el formato de cada dato
+    if (
+      verificarISBN(isbn) &&
+      verificarNombreApellidoAutorEditorial(autor) &&
+      verificarNombreApellidoAutorEditorial(titulo) &&
+      verificarNombreApellidoAutorEditorial(editorial) &&
+      verificarEjemplares(ejemplares)
+    ) {
+      // Compruebo si el libro ya existe
+      for (let libro in listaLibros) {
+        if (listaLibros[libro].isbn == isbn) {
+          alert("El libro con este ISBN ya existe");
+        } else {
+          listaLibros.push(
+            new Libro(codLibro, isbn, autor, titulo, editorial, ejemplares)
+          );
+          alert("Libro añadido correctamente");
+        }
+      }
     } else {
-      listaLibros.push(
-        new Libro(codLibro, isbn, autor, titulo, editorial, ejemplares)
-      );
-      alert("Libro añadido correctamente");
+      alert("Algún dato tiene un formato incorrecto");
     }
+  } else {
+    alert("Faltan datos por introducir");
   }
 }
 
@@ -516,10 +540,12 @@ function bajaLibro() {
     }
   }
   if (estadoBaja == true) {
-    alert("Libro dado de baja correctamente");
+    console.log("Libro dado de baja correctamente");
     console.table(listaLectores);
   } else {
-    alert("El código de libro introducido no coincide con el de ningún libro");
+    console.log(
+      "El código de libro introducido no coincide con el de ningún libro"
+    );
   }
 }
 
@@ -528,7 +554,7 @@ function modifLibro(codigoLibro) {
   let existeLibro = false;
   for (let libro in listaLibros) {
     if (listaLibros[libro].codLibro == codigoLibro) {
-      existeLibro = true; // Si existe, marco la bandera
+      existeLibro = true;
       break;
     }
   }
@@ -548,11 +574,10 @@ function modifLibro(codigoLibro) {
       let existe = false;
       for (let libro in listaLibros) {
         if (listaLibros[libro].codLibro == codLibro) {
-          existe = true; // Si ya existe, marco la bandera
+          existe = true;
           break;
         }
       }
-
       if (existe) {
         alert("El código de libro ya existe");
       } else {
@@ -560,6 +585,7 @@ function modifLibro(codigoLibro) {
         for (let libro in listaLibros) {
           if (listaLibros[libro].codLibro == codigoLibro) {
             listaLibros[libro].codLibro = codLibro;
+            console.log("Libro modificado correctamente");
             break; // Salgo del bucle después de hacer el cambio
           }
         }
@@ -568,41 +594,61 @@ function modifLibro(codigoLibro) {
 
     case "isbn":
       let isbn = prompt("Introduce el nuevo isbn:");
-      for (let libro in listaLibros) {
-        if (listaLibros[libro].codLibro == codigoLibro) {
-          listaLibros[libro].isbn = isbn;
-          break; // Salgo del bucle después de hacer el cambio
+      if (verificarISBN(isbn)) {
+        for (let libro in listaLibros) {
+          if (listaLibros[libro].codLibro == codigoLibro) {
+            listaLibros[libro].isbn = isbn;
+            console.log("Libro modificado correctamente");
+            break; // Salgo del bucle después de hacer el cambio
+          }
         }
+      } else {
+        console.log("El formato del ISBN no es valido");
       }
       break;
 
     case "autor":
       let autor = prompt("Introduce el nuevo autor:");
-      for (let libro in listaLibros) {
-        if (listaLibros[libro].codLibro == codigoLibro) {
-          listaLibros[libro].autor = autor;
-          break; // Salgo del bucle después de hacer el cambio
+      if (verificarNombreApellidoAutorEditorial(autor)) {
+        for (let libro in listaLibros) {
+          if (listaLibros[libro].codLibro == codigoLibro) {
+            listaLibros[libro].autor = autor;
+            console.log("Libro modificado correctamente");
+            break; // Salgo del bucle después de hacer el cambio
+          }
         }
+      } else {
+        console.log("El formato del autor no es valido");
       }
       break;
 
     case "titulo":
       let titulo = prompt("Introduce el nuevo título:");
-      for (let libro in listaLibros) {
-        if (listaLibros[libro].codLibro == codigoLibro) {
-          listaLibros[libro].titulo = titulo;
-          break; // Salgo del bucle después de hacer el cambio
+      if (verificarTitulo(titulo)) {
+        for (let libro in listaLibros) {
+          if (listaLibros[libro].codLibro == codigoLibro) {
+            listaLibros[libro].titulo = titulo;
+            console.log("Libro modificado correctamente");
+            break; // Salgo del bucle después de hacer el cambio
+          }
         }
+      } else {
+        console.log("El formato del título no es válido");
       }
       break;
 
     case "editorial":
       let editorial = prompt("Introduce la nueva editorial:");
-      for (let libro in listaLibros) {
-        if (listaLibros[libro].codLibro == codigoLibro) {
-          listaLibros[libro].editorial = editorial;
-          break; // Salgo del bucle después de hacer el cambio
+      if (verificarNombreApellidoAutorEditorial(editorial)) {
+        for (let libro in listaLibros) {
+          if (listaLibros[libro].codLibro == codigoLibro) {
+            listaLibros[libro].editorial = editorial;
+            console.log("Libro modificado correctamente");
+            break; // Salgo del bucle después de hacer el cambio
+          }
         }
+      } else {
+        console.log("El formato de la editorial no es válido");
       }
       break;
 
@@ -611,37 +657,39 @@ function modifLibro(codigoLibro) {
       ejemplares = parseInt(ejemplares);
 
       // Validación para el número de ejemplares
-      if (ejemplares < 0 || ejemplares > 9) {
-        alert(
+      if (verificarEjemplares(ejemplares)) {
+        for (let libro in listaLibros) {
+          if (listaLibros[libro].codLibro == codigoLibro) {
+            listaLibros[libro].ejemplares = ejemplares;
+            console.log("Libro modificado correctamente");
+            break; // Salgo del bucle después de hacer el cambio
+          }
+        }
+      } else {
+        console.log(
           "El número de ejemplares debe ser mayor o igual a 0 y menor o igual a 9."
         );
-        return; // Salgo de la función si la validación no pasa
-      }
-
-      for (let libro in listaLibros) {
-        if (listaLibros[libro].codLibro == codigoLibro) {
-          listaLibros[libro].ejemplares = ejemplares;
-          break; // Salgo del bucle después de hacer el cambio
-        }
       }
       break;
 
     default:
-      alert("Dato no válido.");
+      console.log("Dato no válido.");
       return;
   }
 
-  alert("Libro modificado correctamente");
   listaLibros.sort((a, b) => a.codLibro - b.codLibro); // Ordeno la lista de libros por código
 }
 
-function hayLibro(codigoLibro) {
-  for (let libro in listaLibros) {
-    if (libro.codLibro === codigoLibro) {
-      return true; // Si encuentro el libro, devuelvo true
+function hayLibro(codLibroOIsbn) {
+  for (let libro of listaLibros) {
+    if (
+      (libro.codLibro === codLibroOIsbn || libro.isbn === codLibroOIsbn) &&
+      !libro.bajaLibro
+    ) {
+      return true; // Si encuentro el libro (bien sea por el Código del libro o por el ISBN) y no está dado de baja, devuelvo true
     }
   }
-  return false; // Si no encuentro el libro, devuelvo false
+  return false; // Si no encuentro el libro o está dado de baja, devuelvo false
 }
 
 function prestamoLibro(codigoLibro) {
@@ -675,23 +723,6 @@ function prestamoLibro(codigoLibro) {
   return prestado; // Devuelvo true si se prestó el libro, o false en caso contrario
 }
 
-function solicitudPrestamo(codLibro, numSocio) {
-  prestamoLibro(codLibro);
-  if (prestamoLibro()) {
-    numeroPrestamo = 1;
-    if (
-      listadoTotalPrestamos[listadoTotalPrestamos.length - 1].numeroPrestamo >=
-      1
-    ) {
-      numeroPrestamo = numeroPrestamo + 1;
-    }
-
-    listadoTotalPrestamos.push(
-      new Prestamo(numeroPrestamo, numSocio, codLibro)
-    );
-  }
-}
-
 function devolucionLibro(codigoIsbn) {
   let prestado = true;
   for (let libro in listaLibros) {
@@ -714,6 +745,24 @@ function devolucionLibro(codigoIsbn) {
   return prestado;
 }
 
+//FUNCIONES PRESTAMO
+
+function solicitudPrestamo(codLibro, numSocio) {
+  prestamoLibro(codLibro);
+  if (prestamoLibro()) {
+    numeroPrestamo = 1;
+    if (
+      listadoTotalPrestamos[listadoTotalPrestamos.length - 1].numeroPrestamo >=
+      1
+    ) {
+      numeroPrestamo = numeroPrestamo + 1;
+    }
+
+    listadoTotalPrestamos.push(
+      new Prestamo(numeroPrestamo, numSocio, codLibro)
+    );
+  }
+}
 function devolucionPrestamos(codigoIsbn, numPrestamo) {
   devolucionLibro(codigoIsbn);
   if (!devolucionLibro()) {
@@ -728,12 +777,27 @@ function devolucionPrestamos(codigoIsbn, numPrestamo) {
   }
 }
 
-//Debe comprobar que cumple los requisitos (cualquier letra del alfabeto español (con o sin acento en las vocales)
-// y en caso de ser 2 palabras, estar separados por "-")
-function compruebaNombreApellidoAutorEditorial(texto) {
-  const nombreApellidoValido = /^[a-zA-ZáéíóúÁÉÍÓÚ]+(-[a-zA-ZáéíóúÁÉÍÓÚ]+)?$/; //Compruebo que este compuesta por una o dos palabras separadas
+//VERIFICACIONES
+function verificarNombreApellidoAutorEditorial(texto) {
+  const datoValido = /^[a-zA-ZáéíóúÁÉÍÓÚ]+(-[a-zA-ZáéíóúÁÉÍÓÚ]+)?$/; //Compruebo que este compuesta por una o dos palabras separadas
   // por un guion, que esta compuesto por cualquier letra (tanto Mayúsculas como Minúsculas) y que las vocales puedan tener acentos
-  return nombreApellidoValido.test(texto); //Devuelvo el resultado de comprobar si el texto que se le da a la funcion cumple los requisitos de nombreApellidoValido
+  return datoValido.test(texto); //Devuelvo el resultado de comprobar si el texto que se le da a la funcion cumple los requisitos de nombreApellidoValido
+}
+
+function verificarISBN(texto) {
+  const isbnValido = /^\d{13}$/; // Debe contener exactamente 13 dígitos
+  return isbnValido.test(texto); //Devuelvo el resultado de comprobar si el texto que se le da a la funcion cumple los requisitos de verificarISBN
+}
+
+function verificarTitulo(texto) {
+  const tituloValido = /^[a-zA-ZáéíóúÁÉÍÓÚ0-9\s\-_¡!@#$%&/()¿?€.,:;]+$/; // Compruebo que el título está compuesto por letras (mayúsculas y minúsculas),
+  // números y los caracteres imprimibles permitidos y espacios (\s)
+  return tituloValido.test(titulo);
+}
+
+function verificarEjemplares(ejemplares) {
+  const ejemplaresValido = /^[0-9]$/; // Valores posibles del 0 al 9
+  return ejemplaresValido.test(ejemplares.toString()); //Devuelve si es valido el valor en formato texto
 }
 
 //INTERACCIONES CON EL DOM:
