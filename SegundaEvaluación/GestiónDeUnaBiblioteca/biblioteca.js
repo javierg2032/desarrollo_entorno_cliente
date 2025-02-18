@@ -1,49 +1,5 @@
 // Recibir Fichero de Libros
 
-/*document
-  .getElementById("importar-boton")
-  .addEventListener("click", function () {
-    if (
-      document.getElementById("importar-input-libros").value == "" &&
-      document.getElementById("importar-input-lectores").value == ""
-    ) {
-      p.remove();
-    }
-
-    const fileLibros = document.getElementById("importar-input-libros")
-      .files[0];
-    const fileLectores = document.getElementById("importar-input-lectores")
-      .files[0];
-
-    if (fileLibros) {
-      const readerLibros = new FileReader();
-      readerLibros.onload = function (e) {
-        const text = e.target.result;
-        processCSV(text, "libros");
-      };
-      readerLibros.readAsText(fileLibros);
-    }
-
-    if (fileLectores) {
-      const readerLectores = new FileReader();
-      readerLectores.onload = function (e) {
-        const text = e.target.result;
-        processCSV(text, "lectores");
-      };
-      readerLectores.readAsText(fileLectores);
-    }
-
-    //Si se ha importado de forma correcta, añadir un parrafo que indique "Importacion Exitosa"
-    let seccionImportar = document.getElementById("importar");
-    let p = document.createElement("p");
-    p.innerText = "Importacion Exitosa!";
-    seccionImportar.appendChild(p);
-
-    //Cuando se importan los ficheros, se limpian los campos de importación
-    document.getElementById("importar-input-libros").value = "";
-    document.getElementById("importar-input-lectores").value = "";
-  });*/
-
 document
   .getElementById("importar-boton")
   .addEventListener("click", function () {
@@ -213,7 +169,7 @@ const listaTelefonosInvalidos = [];
 const listaDominiosValidos = ["es", "com", "org", "net", "eu"];
 
 //Listado Prestamos Total
-const listadoTotalPrestamos = [];
+const listadoPrestamos = [];
 
 //Listado Prestamos Vivos
 const listadoPrestamosVivos = [];
@@ -486,41 +442,37 @@ function altaLibro(
   codLibro =
     codLibro.toString(); /*Convierto de nuevo el código de libro en una cadena de texto para que cumpla con los requisitos del enunciado*/
 
-  // Verifico que ninguno de los datos esté vacio
-  if (
-    isbn != "" &&
-    autor != "" &&
-    titulo != "" &&
-    editorial != "" &&
-    ejemplares != ""
-  ) {
+  // Verifico que ninguno de los datos esté vacío
+  if (isbn != "" && autor != "" && titulo != "" && editorial != "" && ejemplares != "") {
     ejemplares = parseInt(ejemplares); // Convierto el número de ejemplares a entero
+
     // Verifico el formato de cada dato
     if (
       verificarISBN(isbn) &&
       verificarNombreApellidoAutorEditorial(autor) &&
-      verificarNombreApellidoAutorEditorial(titulo) &&
+      verificarTitulo(titulo) &&
       verificarNombreApellidoAutorEditorial(editorial) &&
       verificarEjemplares(ejemplares)
     ) {
-      // Compruebo si el libro ya existe
-      for (let libro in listaLibros) {
-        if (listaLibros[libro].isbn == isbn) {
-          alert("El libro con este ISBN ya existe");
-        } else {
-          listaLibros.push(
-            new Libro(codLibro, isbn, autor, titulo, editorial, ejemplares)
-          );
-          alert("Libro añadido correctamente");
-        }
+      // Compruebo si el libro ya existe en la lista
+      let existe = listaLibros.some((libro) => libro.isbn === isbn); // Uso some() para verificar si ya hay un libro con el mismo ISBN
+
+      if (existe) {
+        alert("El libro con este ISBN ya existe"); // Muestro un mensaje de alerta si el libro ya está en la lista
+      } else {
+        listaLibros.push(
+          new Libro(codLibro, isbn, autor, titulo, editorial, ejemplares)
+        ); // Si el libro no existe, lo agrego a la lista
+        alert("Libro añadido correctamente"); // Muestro un mensaje de confirmación
       }
     } else {
-      alert("Algún dato tiene un formato incorrecto");
+      alert("Algún dato tiene un formato incorrecto"); // Muestro un mensaje de error si algún dato tiene un formato inválido
     }
   } else {
-    alert("Faltan datos por introducir");
+    alert("Faltan datos por introducir"); // Muestro un mensaje de error si algún campo está vacío
   }
 }
+
 
 function bajaLibro() {
   codigoLibro = prompt("Introduce el codigo del libro:");
@@ -695,57 +647,111 @@ function hayLibro(codLibroOIsbn) {
 function prestamoLibro(codigoLibro) {
   let prestado = false;
 
-  // Recorro la lista de libros para buscar el libro con el código proporcionado
-  for (let libro in listaLibros) {
-    if (libro.codLibro == codigoLibro) {
-      if (libro.ejemplares > 0) {
-        // Si hay ejemplares disponibles, hago el préstamo
-        libro.estado = "Prestado"; // Cambio el estado del libro
-        libro.ejemplares = parseInt(libro.ejemplares) - 1; // Resto 1 al número de ejemplares
-        libro.ejemplares = libro.ejemplares.toString(); // Aseguro que el valor vuelva a ser cadena de texto
+  // Verifico si el libro existe y no está dado de baja
+  if (!hayLibro(codigoLibro)) {
+    alert("El libro con el código proporcionado no existe o está dado de baja.");
+    return prestado;
+  } else {
 
-        prestado = true; // Indico que el préstamo fue exitoso
-        break; // Salgo del bucle porque ya se ha procesado el préstamo
-      } else {
-        alert(
-          "No hay suficientes ejemplares disponibles para realizar el préstamo"
-        );
-        break; // Salgo del bucle si no hay ejemplares disponibles
+    // Recorro la lista de libros para buscar el libro con el código proporcionado
+    for (let libro in listaLibros) {
+      if (libro.codLibro == codigoLibro) {
+        if (libro.ejemplares > 0) {
+          // Si hay ejemplares disponibles, hago el préstamo
+          libro.estado = "Prestado"; // Cambio el estado del libro
+          libro.ejemplares = parseInt(libro.ejemplares) - 1; // Resto 1 al número de ejemplares
+          libro.ejemplares = libro.ejemplares.toString(); // Aseguro que el valor vuelva a ser cadena de texto
+
+          prestado = true; // Indico que el préstamo fue exitoso
+          break; // Salgo del bucle porque ya se ha procesado el préstamo
+        } else {
+          alert(
+            "No hay suficientes ejemplares disponibles para realizar el préstamo"
+          );
+          break; // Salgo del bucle si no hay ejemplares disponibles
+        }
       }
     }
-  }
-
-  // Si no se encontró el libro, se devuelve false
-  if (!prestado) {
-    alert("El libro con el código proporcionado no existe.");
   }
 
   return prestado; // Devuelvo true si se prestó el libro, o false en caso contrario
 }
 
-function devolucionLibro(codigoIsbn) {
-  let prestado = true;
-  for (let libro in listaLibros) {
-    if (listaLibros[libro].isbn == codigoIsbn) {
-      if (listaLibros[libro].ejemplares > 0) {
-        prestado = false;
+function devolucionLibro(codLibro) {
+  // Verifico si el libro existe y no está dado de baja
+  if (!hayLibro(codLibro)) {
+    return false; // Devuelvo false si el libro no existe o está dado de baja
+  }
 
-        if (!prestado) {
-          //Lo convierto en un entero para poder sumarle 1
-          listaLibros[libro].ejemplares =
-            parseInt(listaLibros[libro].ejemplares) + 1;
-
-          //Vuelvo a convertirlo en cadena para que no haya problemas al volver a llamar a la funcion
-          listaLibros[libro].ejemplares =
-            listaLibros[libro].ejemplares.toString();
-        }
-      }
+  // Recorro la lista de libros para buscar el libro con el código proporcionado
+  for (let libro of listaLibros) {
+    if (libro.codLibro == codLibro) {
+      // Aumento el número de ejemplares disponibles
+      libro.ejemplares = parseInt(libro.ejemplares) + 1;
+      libro.ejemplares = libro.ejemplares.toString(); // Aseguro que el valor vuelva a ser cadena de texto
+      return true; // Devuelvo true si se encontró el libro y se aumentaron los ejemplares
     }
   }
-  return prestado;
+
+  return false; // Devuelvo false si no se encontró el libro
+}
+
+function dondeLibro() {
+  let codLibro = prompt("Introduce el código del libro:");
+
+  // Verifico si el libro existe y no está dado de baja
+  if (!hayLibro(codLibro)) {
+    console.log("El libro con el código proporcionado no existe o está dado de baja.");
+    return;
+  }
+
+  // Defino la ubicación fija para los libros de manga
+  const ubicacion = {
+    pasillo: 7,
+    estanteria: 4,
+    estante: 6
+  };
+
+  console.log(`El libro con código ${codLibro} se encuentra en el pasillo ${ubicacion.pasillo}, estantería ${ubicacion.estanteria}, estante ${ubicacion.estante}.`);
 }
 
 //FUNCIONES PRESTAMO
+
+function listadoTotalPrestamos() {
+  // Compruebo si no hay préstamos registrados
+  if (listadoPrestamos.length === 0) {
+    console.log("No hay préstamos registrados.");
+    return;
+  }
+
+  // Recorro la lista de todos los préstamos
+  for (let prestamo of listadoPrestamos) {
+    // Creo una cadena con la información del préstamo
+    let infoPrestamo = `Número de Préstamo: ${prestamo.numPrestamo}, Número de Socio: ${prestamo.numSocio}, Código de Libro: ${prestamo.codLibro}, Fecha de Préstamo: ${prestamo.fechaPrestamo.toLocaleDateString()}`;
+
+    // Si el préstamo tiene fecha de devolución, la añado a la cadena
+    if (prestamo.fechaDevolucion) {
+      infoPrestamo += `, Fecha de Devolución: ${prestamo.fechaDevolucion.toLocaleDateString()}`;
+    } else {
+      // Si no tiene fecha de devolución, indico que el préstamo está vivo
+      infoPrestamo += `, Estado: Vivo`;
+    }
+
+    // Muestro la información del préstamo en la consola
+    console.log(infoPrestamo);
+  }
+
+  // Muestro el array completo de préstamos en la consola
+  console.log(listadoPrestamos);
+}
+
+
+
+
+
+
+
+
 
 function solicitudPrestamo(codLibro, numSocio) {
   prestamoLibro(codLibro);
@@ -792,7 +798,7 @@ function verificarISBN(texto) {
 function verificarTitulo(texto) {
   const tituloValido = /^[a-zA-ZáéíóúÁÉÍÓÚ0-9\s\-_¡!@#$%&/()¿?€.,:;]+$/; // Compruebo que el título está compuesto por letras (mayúsculas y minúsculas),
   // números y los caracteres imprimibles permitidos y espacios (\s)
-  return tituloValido.test(titulo);
+  return tituloValido.test(texto);
 }
 
 function verificarEjemplares(ejemplares) {
@@ -801,46 +807,217 @@ function verificarEjemplares(ejemplares) {
 }
 
 //INTERACCIONES CON EL DOM:
-//Al hacer click sobre el botón Actualizar libros, se mostrará en la vista (una tabla con id vista-libros-tabla)
-// los libros que hay en la biblioteca (Es decir el array de listaLibros)
+//VISTA LIBROS
+
 document
   .getElementById("vista-libros-boton")
   .addEventListener("click", function () {
-    document.getElementById("vista-libros").querySelector("tbody").innerHTML =
-      "";
-    for (let libro in listaLibros) {
-      document
-        .getElementById("vista-libros")
-        .querySelector("tbody").innerHTML += `
-      <tr>
-        <td>${listaLibros[libro].codLibro}</td>
-        <td>${listaLibros[libro].isbn}</td>
-        <td>${listaLibros[libro].autor}</td>
-        <td>${listaLibros[libro].titulo}</td>
-        <td>${listaLibros[libro].editorial}</td>
-        <td>${listaLibros[libro].ejemplares}</td>
-      </tr>`;
+    const tbody = document.getElementById("vista-libros").querySelector("tbody");
+    tbody.innerHTML = "";
+    for (let libro of listaLibros) {
+      if (!libro.bajaLibro) {
+        tbody.innerHTML += `
+          <tr>
+            <td>${libro.codLibro}</td>
+            <td>${libro.isbn}</td>
+            <td>${libro.autor}</td>
+            <td>${libro.titulo}</td>
+            <td>${libro.editorial}</td>
+            <td>${libro.ejemplares}</td>
+          </tr>`;
+      }
     }
+    // Estilos
+    document.querySelectorAll("#vista-libros th").forEach(th => {
+      th.style.backgroundColor = "#BB61F0";
+      th.style.color = "#1B1B1B";
+      th.style.padding = "10px";
+      th.style.outline = "1px solid #000";
+    });
+    document.querySelectorAll("#vista-libros td").forEach(td => {
+      td.style.backgroundColor = "#C398EB";
+      td.style.color = "#1B1B1B";
+      td.style.padding = "10px";
+      td.style.outline = "1px solid #000";
+    });
   });
 
-//Al hacer click sobre el botón Actualizar lectores, se mostrará en la vista los lectores que hay en la
-// biblioteca (Es decir el array de listaLectores)
+
+//VISTA LECTORES
+
 document
   .getElementById("comprobar-lectores-boton")
   .addEventListener("click", function () {
-    document
-      .getElementById("comprobar-lectores-tabla")
-      .querySelector("tbody").innerHTML = "";
-    for (let lector in listaLectores) {
-      document
-        .getElementById("comprobar-lectores-tabla")
-        .querySelector("tbody").innerHTML += `
-      <tr>
-        <td>${listaLectores[lector].numSocio}</td>
-        <td>${listaLectores[lector].nombre}</td>
-        <td>${listaLectores[lector].apellido}</td>
-        <td>${listaLectores[lector].telefono}</td>
-        <td>${listaLectores[lector].email}</td>
-      </tr>`;
+    const tbody = document.getElementById("comprobar-lectores-tabla").querySelector("tbody");
+    tbody.innerHTML = "";
+    for (let lector of listaLectores) {
+      if (!lector.bajaLector) {
+        tbody.insertAdjacentHTML(
+          "beforeend",
+          `<tr>
+            <td style="background-color: #C398EB;">${lector.numSocio}</td>
+            <td style="background-color: #C398EB;">${lector.nombre}</td>
+            <td style="background-color: #C398EB;">${lector.apellido}</td>
+            <td style="background-color: ${verificarTelefono(lector.telefono) ? '#C398EB' : '#EA9E90'};">${lector.telefono}</td>
+            <td style="background-color: ${verificarEmail(lector.email) ? '#C398EB' : '#EA9E90'};">${lector.email}</td>
+          </tr>`
+        );
+      }
+    }
+
+    // Estilos generales de la tabla
+    document.querySelectorAll("#comprobar-lectores-tabla th").forEach(th => {
+      th.style.backgroundColor = "#BB61F0";
+      th.style.color = "#1B1B1B";
+      th.style.padding = "10px";
+      th.style.outline = "1px solid #000";
+    });
+    document.querySelectorAll("#comprobar-lectores-tabla td").forEach(td => {
+      td.style.color = "#1B1B1B";
+      td.style.padding = "10px";
+      td.style.outline = "1px solid #000";
+    });
+  });
+
+
+
+
+//ALTA LIBRO
+
+
+document
+  .getElementById("alta-libro-boton")
+  .addEventListener("click", function () {
+    let seccionAlta = document.getElementById("alta-libro");
+    let mensajeExistente = document.getElementById("mensaje-alta");
+
+    // Si el mensaje ya existe, lo elimino antes de continuar
+    if (mensajeExistente) {
+      mensajeExistente.remove();
+    }
+
+    let isbn = document.getElementById("alta-libro-isbn").value;
+    let autor = document.getElementById("alta-libro-autor").value;
+    let titulo = document.getElementById("alta-libro-titulo").value;
+    let editorial = document.getElementById("alta-libro-editorial").value;
+    let ejemplares = document.getElementById("alta-libro-ejemplares").value;
+
+
+    try {
+      altaLibro(isbn, autor, titulo, editorial, ejemplares);
+      mostrarMensajeExito("¡Alta de libro exitosa!");
+       // Limpio los campos del formulario
+       document.getElementById("alta-libro-isbn").value = "";
+       document.getElementById("alta-libro-autor").value = "";
+       document.getElementById("alta-libro-titulo").value = "";
+       document.getElementById("alta-libro-editorial").value = "";
+       document.getElementById("alta-libro-ejemplares").value = "";
+    } catch (error) {
+      mostrarMensajeError(error.message);
+    }
+
+
+    // Función para mostrar el mensaje de error
+    function mostrarMensajeError(mensaje) {
+      let p = document.createElement("p");
+      p.id = "mensaje-alta";
+      p.innerText = mensaje;
+      p.style.color = "red";
+      seccionAlta.appendChild(p);
+    }
+
+    // Función para mostrar el mensaje de éxito
+    function mostrarMensajeExito(mensaje) {
+      let p = document.createElement("p");
+      p.id = "mensaje-alta";
+      p.innerText = mensaje;
+      p.style.color = "green";
+      seccionAlta.appendChild(p);
     }
   });
+
+
+
+//Devolución/Préstamo de libros
+
+
+document
+  .getElementById("prestamo-boton")
+  .addEventListener("click", function () {
+    let seccionPrestamo = document.getElementById("prestamo");
+    let mensajeExistente = document.getElementById("mensaje-prestamo");
+
+    // Si el mensaje ya existe, lo elimino antes de continuar
+    if (mensajeExistente) {
+      mensajeExistente.remove();
+    }
+
+    let codLibro = document.getElementById("codigo-libro-prestamo").value;
+    let numSocio = document.getElementById("numero-socio-prestamo").value;
+
+    try {
+      solicitudPrestamo(codLibro, numSocio);
+      mostrarMensajeExito(`¡Préstamo exitoso! Número de Préstamo: ${numPrestamo}, Fecha de Préstamo: ${new Date().toLocaleDateString()}`);
+    } catch (error) {
+      mostrarMensajeError(error.message);
+    }
+
+    // Función para mostrar el mensaje de error
+    function mostrarMensajeError(mensaje) {
+      let p = document.createElement("p");
+      p.id = "mensaje-prestamo";
+      p.innerText = mensaje;
+      p.style.color = "red";
+      seccionPrestamo.appendChild(p);
+    }
+
+    // Función para mostrar el mensaje de éxito
+    function mostrarMensajeExito(mensaje) {
+      let p = document.createElement("p");
+      p.id = "mensaje-prestamo";
+      p.innerText = mensaje;
+      p.style.color = "green";
+      seccionPrestamo.appendChild(p);
+    }
+  });
+
+document
+  .getElementById("devolucion-boton")
+  .addEventListener("click", function () {
+    let seccionDevolucion = document.getElementById("devolucion");
+    let mensajeExistente = document.getElementById("mensaje-devolucion");
+
+    // Si el mensaje ya existe, lo elimino antes de continuar
+    if (mensajeExistente) {
+      mensajeExistente.remove();
+    }
+
+    let codLibro = document.getElementById("codigo-libro-devolucion").value;
+    let numPrestamo = document.getElementById("numero-prestamo-devolucion").value;
+
+    try {
+      devolucionPrestamos(codLibro, numPrestamo);
+      mostrarMensajeExito(`¡Devolución exitosa! Número de Préstamo: ${numPrestamo}, Fecha de Devolución: ${new Date().toLocaleDateString()}`);
+    } catch (error) {
+      mostrarMensajeError(error.message);
+    }
+
+    // Función para mostrar el mensaje de error
+    function mostrarMensajeError(mensaje) {
+      let p = document.createElement("p");
+      p.id = "mensaje-devolucion";
+      p.innerText = mensaje;
+      p.style.color = "red";
+      seccionDevolucion.appendChild(p);
+    }
+
+    // Función para mostrar el mensaje de éxito
+    function mostrarMensajeExito(mensaje) {
+      let p = document.createElement("p");
+      p.id = "mensaje-devolucion";
+      p.innerText = mensaje;
+      p.style.color = "green";
+      seccionDevolucion.appendChild(p);
+    }
+  });
+
