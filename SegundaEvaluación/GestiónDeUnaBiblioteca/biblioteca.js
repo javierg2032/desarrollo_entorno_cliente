@@ -1,5 +1,4 @@
 // Recibir Fichero de Libros
-
 document
   .getElementById("importar-boton")
   .addEventListener("click", function () {
@@ -443,7 +442,13 @@ function altaLibro(
     codLibro.toString(); /*Convierto de nuevo el código de libro en una cadena de texto para que cumpla con los requisitos del enunciado*/
 
   // Verifico que ninguno de los datos esté vacío
-  if (isbn != "" && autor != "" && titulo != "" && editorial != "" && ejemplares != "") {
+  if (
+    isbn != "" &&
+    autor != "" &&
+    titulo != "" &&
+    editorial != "" &&
+    ejemplares != ""
+  ) {
     ejemplares = parseInt(ejemplares); // Convierto el número de ejemplares a entero
 
     // Verifico el formato de cada dato
@@ -463,7 +468,6 @@ function altaLibro(
         listaLibros.push(
           new Libro(codLibro, isbn, autor, titulo, editorial, ejemplares)
         ); // Si el libro no existe, lo agrego a la lista
-        alert("Libro añadido correctamente"); // Muestro un mensaje de confirmación
       }
     } else {
       alert("Algún dato tiene un formato incorrecto"); // Muestro un mensaje de error si algún dato tiene un formato inválido
@@ -472,7 +476,6 @@ function altaLibro(
     alert("Faltan datos por introducir"); // Muestro un mensaje de error si algún campo está vacío
   }
 }
-
 
 function bajaLibro() {
   codigoLibro = prompt("Introduce el codigo del libro:");
@@ -649,27 +652,26 @@ function prestamoLibro(codigoLibro) {
 
   // Verifico si el libro existe y no está dado de baja
   if (!hayLibro(codigoLibro)) {
-    alert("El libro con el código proporcionado no existe o está dado de baja.");
+    alert(
+      "El libro con el código proporcionado no existe o está dado de baja."
+    );
     return prestado;
-  } else {
+  }
 
-    // Recorro la lista de libros para buscar el libro con el código proporcionado
-    for (let libro in listaLibros) {
-      if (libro.codLibro == codigoLibro) {
-        if (libro.ejemplares > 0) {
-          // Si hay ejemplares disponibles, hago el préstamo
-          libro.estado = "Prestado"; // Cambio el estado del libro
-          libro.ejemplares = parseInt(libro.ejemplares) - 1; // Resto 1 al número de ejemplares
-          libro.ejemplares = libro.ejemplares.toString(); // Aseguro que el valor vuelva a ser cadena de texto
-
-          prestado = true; // Indico que el préstamo fue exitoso
-          break; // Salgo del bucle porque ya se ha procesado el préstamo
-        } else {
-          alert(
-            "No hay suficientes ejemplares disponibles para realizar el préstamo"
-          );
-          break; // Salgo del bucle si no hay ejemplares disponibles
-        }
+  // Recorro la lista de libros para buscar el libro con el código proporcionado
+  for (let libro of listaLibros) {
+    if (libro.codLibro == codigoLibro) {
+      if (libro.ejemplares > 0) {
+        // Si hay ejemplares disponibles, hago el préstamo
+        libro.ejemplares = parseInt(libro.ejemplares) - 1; // Resto 1 al número de ejemplares
+        libro.ejemplares = libro.ejemplares.toString(); // Aseguro que el valor vuelva a ser cadena de texto
+        prestado = true; // Indico que el préstamo fue exitoso
+        break; // Salgo del bucle porque ya se ha procesado el préstamo
+      } else {
+        alert(
+          "No hay suficientes ejemplares disponibles para realizar el préstamo"
+        );
+        break; // Salgo del bucle si no hay ejemplares disponibles
       }
     }
   }
@@ -701,7 +703,9 @@ function dondeLibro() {
 
   // Verifico si el libro existe y no está dado de baja
   if (!hayLibro(codLibro)) {
-    console.log("El libro con el código proporcionado no existe o está dado de baja.");
+    console.log(
+      "El libro con el código proporcionado no existe o está dado de baja."
+    );
     return;
   }
 
@@ -709,10 +713,12 @@ function dondeLibro() {
   const ubicacion = {
     pasillo: 7,
     estanteria: 4,
-    estante: 6
+    estante: 6,
   };
 
-  console.log(`El libro con código ${codLibro} se encuentra en el pasillo ${ubicacion.pasillo}, estantería ${ubicacion.estanteria}, estante ${ubicacion.estante}.`);
+  console.log(
+    `El libro con código ${codLibro} se encuentra en el pasillo ${ubicacion.pasillo}, estantería ${ubicacion.estanteria}, estante ${ubicacion.estante}.`
+  );
 }
 
 //FUNCIONES PRESTAMO
@@ -727,7 +733,11 @@ function listadoTotalPrestamos() {
   // Recorro la lista de todos los préstamos
   for (let prestamo of listadoPrestamos) {
     // Creo una cadena con la información del préstamo
-    let infoPrestamo = `Número de Préstamo: ${prestamo.numPrestamo}, Número de Socio: ${prestamo.numSocio}, Código de Libro: ${prestamo.codLibro}, Fecha de Préstamo: ${prestamo.fechaPrestamo.toLocaleDateString()}`;
+    let infoPrestamo = `Número de Préstamo: ${
+      prestamo.numPrestamo
+    }, Número de Socio: ${prestamo.numSocio}, Código de Libro: ${
+      prestamo.codLibro
+    }, Fecha de Préstamo: ${prestamo.fechaPrestamo.toLocaleDateString()}`;
 
     // Si el préstamo tiene fecha de devolución, la añado a la cadena
     if (prestamo.fechaDevolucion) {
@@ -745,41 +755,66 @@ function listadoTotalPrestamos() {
   console.log(listadoPrestamos);
 }
 
-
-
-
-
-
-
-
-
 function solicitudPrestamo(codLibro, numSocio) {
-  prestamoLibro(codLibro);
-  if (prestamoLibro()) {
-    numeroPrestamo = 1;
-    if (
-      listadoTotalPrestamos[listadoTotalPrestamos.length - 1].numeroPrestamo >=
-      1
-    ) {
-      numeroPrestamo = numeroPrestamo + 1;
-    }
+  if (!hayLibro(codLibro)) {
+    alert(
+      "El libro con el código proporcionado no existe o está dado de baja."
+    );
+    return;
+  }
 
-    listadoTotalPrestamos.push(
+  let lectorExiste = listaLectores.some(
+    (lector) => lector.numSocio == numSocio && !lector.bajaLector
+  );
+  if (!lectorExiste) {
+    alert(
+      "El lector con el número de socio proporcionado no existe o está dado de baja."
+    );
+    return;
+  }
+
+  if (prestamoLibro(codLibro)) {
+    let numeroPrestamo =
+      listadoPrestamos.length > 0
+        ? listadoPrestamos[listadoPrestamos.length - 1].numPrestamo + 1
+        : 1;
+    listadoPrestamos.push(new Prestamo(numeroPrestamo, numSocio, codLibro));
+    listadoPrestamosVivos.push(
       new Prestamo(numeroPrestamo, numSocio, codLibro)
     );
+    alert(
+      `¡Préstamo exitoso! Número de Préstamo: ${numeroPrestamo}, Fecha de Préstamo: ${new Date().toLocaleDateString()}`
+    );
+  } else {
+    alert("No se pudo realizar el préstamo.");
   }
 }
-function devolucionPrestamos(codigoIsbn, numPrestamo) {
-  devolucionLibro(codigoIsbn);
-  if (!devolucionLibro()) {
-    for (let prestamo in listadoTotalPrestamos) {
-      if (listadoTotalPrestamos[prestamo].numPrestamo == numPrestamo) {
-        listadoTotalPrestamos[prestamo].fechaDevolucion = new Date();
-      }
+function devolucionPrestamos(codLibro, numPrestamo) {
+  if (!devolucionLibro(codLibro)) {
+    alert(
+      "El libro con el código proporcionado no existe o está dado de baja."
+    );
+    return;
+  }
+
+  let prestamoEncontrado = false;
+  for (let prestamo of listadoPrestamos) {
+    if (prestamo.numPrestamo == numPrestamo && prestamo.codLibro == codLibro) {
+      prestamo.fechaDevolucion = new Date();
+      prestamoEncontrado = true;
+      break;
     }
-    for (let prestamo in listadoPrestamosVivos) {
-      listadoPrestamosVivos.splice(listadoPrestamosVivos.indexOf(prestamo), 1);
-    }
+  }
+
+  if (prestamoEncontrado) {
+    listadoPrestamosVivos = listadoPrestamosVivos.filter(
+      (prestamo) => prestamo.numPrestamo != numPrestamo
+    );
+    alert(
+      `¡Devolución exitosa! Número de Préstamo: ${numPrestamo}, Fecha de Devolución: ${new Date().toLocaleDateString()}`
+    );
+  } else {
+    alert("No se encontró el préstamo con el número proporcionado.");
   }
 }
 
@@ -812,7 +847,9 @@ function verificarEjemplares(ejemplares) {
 document
   .getElementById("vista-libros-boton")
   .addEventListener("click", function () {
-    const tbody = document.getElementById("vista-libros").querySelector("tbody");
+    const tbody = document
+      .getElementById("vista-libros")
+      .querySelector("tbody");
     tbody.innerHTML = "";
     for (let libro of listaLibros) {
       if (!libro.bajaLibro) {
@@ -828,13 +865,13 @@ document
       }
     }
     // Estilos
-    document.querySelectorAll("#vista-libros th").forEach(th => {
+    document.querySelectorAll("#vista-libros th").forEach((th) => {
       th.style.backgroundColor = "#BB61F0";
       th.style.color = "#1B1B1B";
       th.style.padding = "10px";
       th.style.outline = "1px solid #000";
     });
-    document.querySelectorAll("#vista-libros td").forEach(td => {
+    document.querySelectorAll("#vista-libros td").forEach((td) => {
       td.style.backgroundColor = "#C398EB";
       td.style.color = "#1B1B1B";
       td.style.padding = "10px";
@@ -842,13 +879,14 @@ document
     });
   });
 
-
 //VISTA LECTORES
 
 document
   .getElementById("comprobar-lectores-boton")
   .addEventListener("click", function () {
-    const tbody = document.getElementById("comprobar-lectores-tabla").querySelector("tbody");
+    const tbody = document
+      .getElementById("comprobar-lectores-tabla")
+      .querySelector("tbody");
     tbody.innerHTML = "";
     for (let lector of listaLectores) {
       if (!lector.bajaLector) {
@@ -858,32 +896,32 @@ document
             <td style="background-color: #C398EB;">${lector.numSocio}</td>
             <td style="background-color: #C398EB;">${lector.nombre}</td>
             <td style="background-color: #C398EB;">${lector.apellido}</td>
-            <td style="background-color: ${verificarTelefono(lector.telefono) ? '#C398EB' : '#EA9E90'};">${lector.telefono}</td>
-            <td style="background-color: ${verificarEmail(lector.email) ? '#C398EB' : '#EA9E90'};">${lector.email}</td>
+            <td style="background-color: ${
+              verificarTelefono(lector.telefono) ? "#C398EB" : "#EA9E90"
+            };">${lector.telefono}</td>
+            <td style="background-color: ${
+              verificarEmail(lector.email) ? "#C398EB" : "#EA9E90"
+            };">${lector.email}</td>
           </tr>`
         );
       }
     }
 
     // Estilos generales de la tabla
-    document.querySelectorAll("#comprobar-lectores-tabla th").forEach(th => {
+    document.querySelectorAll("#comprobar-lectores-tabla th").forEach((th) => {
       th.style.backgroundColor = "#BB61F0";
       th.style.color = "#1B1B1B";
       th.style.padding = "10px";
       th.style.outline = "1px solid #000";
     });
-    document.querySelectorAll("#comprobar-lectores-tabla td").forEach(td => {
+    document.querySelectorAll("#comprobar-lectores-tabla td").forEach((td) => {
       td.style.color = "#1B1B1B";
       td.style.padding = "10px";
       td.style.outline = "1px solid #000";
     });
   });
 
-
-
-
 //ALTA LIBRO
-
 
 document
   .getElementById("alta-libro-boton")
@@ -902,20 +940,18 @@ document
     let editorial = document.getElementById("alta-libro-editorial").value;
     let ejemplares = document.getElementById("alta-libro-ejemplares").value;
 
-
     try {
       altaLibro(isbn, autor, titulo, editorial, ejemplares);
       mostrarMensajeExito("¡Alta de libro exitosa!");
-       // Limpio los campos del formulario
-       document.getElementById("alta-libro-isbn").value = "";
-       document.getElementById("alta-libro-autor").value = "";
-       document.getElementById("alta-libro-titulo").value = "";
-       document.getElementById("alta-libro-editorial").value = "";
-       document.getElementById("alta-libro-ejemplares").value = "";
+      // Limpio los campos del formulario
+      document.getElementById("alta-libro-isbn").value = "";
+      document.getElementById("alta-libro-autor").value = "";
+      document.getElementById("alta-libro-titulo").value = "";
+      document.getElementById("alta-libro-editorial").value = "";
+      document.getElementById("alta-libro-ejemplares").value = "";
     } catch (error) {
       mostrarMensajeError(error.message);
     }
-
 
     // Función para mostrar el mensaje de error
     function mostrarMensajeError(mensaje) {
@@ -936,10 +972,7 @@ document
     }
   });
 
-
-
 //Devolución/Préstamo de libros
-
 
 document
   .getElementById("prestamo-boton")
@@ -957,7 +990,9 @@ document
 
     try {
       solicitudPrestamo(codLibro, numSocio);
-      mostrarMensajeExito(`¡Préstamo exitoso! Número de Préstamo: ${numPrestamo}, Fecha de Préstamo: ${new Date().toLocaleDateString()}`);
+      mostrarMensajeExito(
+        `¡Préstamo exitoso! Número de Préstamo: ${numPrestamo}, Fecha de Préstamo: ${new Date().toLocaleDateString()}`
+      );
     } catch (error) {
       mostrarMensajeError(error.message);
     }
@@ -993,11 +1028,15 @@ document
     }
 
     let codLibro = document.getElementById("codigo-libro-devolucion").value;
-    let numPrestamo = document.getElementById("numero-prestamo-devolucion").value;
+    let numPrestamo = document.getElementById(
+      "numero-prestamo-devolucion"
+    ).value;
 
     try {
       devolucionPrestamos(codLibro, numPrestamo);
-      mostrarMensajeExito(`¡Devolución exitosa! Número de Préstamo: ${numPrestamo}, Fecha de Devolución: ${new Date().toLocaleDateString()}`);
+      mostrarMensajeExito(
+        `¡Devolución exitosa! Número de Préstamo: ${numPrestamo}, Fecha de Devolución: ${new Date().toLocaleDateString()}`
+      );
     } catch (error) {
       mostrarMensajeError(error.message);
     }
@@ -1020,4 +1059,3 @@ document
       seccionDevolucion.appendChild(p);
     }
   });
-
