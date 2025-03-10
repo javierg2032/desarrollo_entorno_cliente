@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home</title>
+    <style>
+      table,
+      td,
+      th {
+        border-spacing: 0px;
+        border: 1px solid black;
+        margin: 15px 5px 15px 35px;
+      }
+    </style>
+    <style>
+      button {
+        border: 1px solid black;
+        padding: 5px 5px;
+        margin: 5px 5px 5px 15px;
+      }
+    </style>
+    <style>
+      input,
+      p {
+        margin: 3px 0px 3px 5px;
+      }
+    </style>
+    <style>
+      .contenedor-cuadros {
+        display: flex;
+        flex-direction: row;
+      }
+      .cuadro {
+        width: 150px;
+        height: 100px;
+        border: 1px solid black;
+        margin: 10px;
+        padding: 5px;
+        align-content: center;
+        text-align: center;
+        background-color: lightgray;
+        float: left;
+        /* display: flex;
+			flex-direction: row; */
+      }
+    </style>
+    <style>
+      .contenedor-imagenes {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px;
+      }
+      .contenedor-imagenes > div {
+        background-color: #f1f1f1;
+        border: 1px solid black;
+        padding: 10px;
+        font-size: 30px;
+        text-align: center;
+      }
+      #imagenes {
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Catálogo de Artículos</h1>
+    <section id="importar">
+      <h2>Importar</h2>
+      <div>
+        <label>Archivo de artículos de Asterix:</label>
+        <input type="file" id="importar-input-asterix" />
+      </div>
+      <div>
+        <label>Archivo de artículos de CajaSorpresa:</label>
+        <input type="file" id="importar-input-cajasorpresa" />
+      </div>
+      <div>
+        <label>Archivo de artículos de StarWars:</label>
+        <input type="file" id="importar-input-starwars" />
+      </div>
+      <button id="importar-boton">Importar</button>
+    </section>
+    <section id="vista-articulos">
+      <h2>Vista Artículos</h2>
+      <table id="vista-articulos-tabla">
+        <thead>
+          <tr>
+            <th>Tipo de artículo</th>
+            <th>Tipo de objeto / Temática / Protagonista</th>
+            <th>Nombre de Artículo</th>
+            <th>Precio</th>
+            <th>Artículos disponibles</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section id="alta-articulo">
+      <h2>Alta Artículo</h2>
+      <div>
+        <label>Tipo de artículo (Asterix, CajaSorpresa o StarWars): </label>
+        <input
+          type="text"
+          placeholder="Tipo artículo"
+          id="alta-articulo-tipo"
+        />
+      </div>
+      <div>
+        <label
+          >Dato específico según tipo de artículo (tipo de objeto, temática o
+          protagonista):
+        </label>
+        <input
+          type="text"
+          placeholder="Dato específico"
+          id="alta-articulo-especifico"
+        />
+      </div>
+      <div>
+        <label>SKU (3 letras + 3 ó 4 cifras): </label>
+        <input type="text" placeholder="SKU" id="alta-articulo-sku" />
+      </div>
+      <div>
+        <label>Nombre del artículo: </label>
+        <input
+          type="text"
+          placeholder="Nombre artículo"
+          id="alta-articulo-nombre"
+        />
+      </div>
+      <div>
+        <label>Precio (Euros): </label>
+        <input type="text" placeholder="Precio" id="alta-articulo-precio" />
+      </div>
+      <div>
+        <label>Número de artículos: </label>
+        <input
+          type="number"
+          step="1"
+          placeholder="Número artículos"
+          id="alta-articulo-numero"
+        />
+      </div>
+      <div>
+        <label>Fichero con imagen del artículo: </label>
+        <input
+          type="text"
+          placeholder="Nombre fichero"
+          id="alta-articulo-imagen"
+        />
+      </div>
+      <button id="alta-articulo-boton">Alta artículo</button>
+    </section>
+    <section id="add-units">
+      <h2>Añadir unidades a un producto existente</h2>
+      <div>
+        <label>SKU: </label>
+        <input type="text" placeholder="SKU del artículo" id="add-units-sku" />
+      </div>
+      <div>
+        <label>Cuántas unidades se añaden: </label>
+        <input type="text" placeholder="Unidades" id="add-units-numero" />
+      </div>
+      <button id="add-units-boton">Añadir unidades</button>
+    </section>
+    <section id="imagenes">
+      <h2>Imágenes de artículos</h2>
+      <div class="contenedor-cuadros">
+        <div class="cuadro" id="imagenes-asterix">
+          <p>Asterix</p>
+        </div>
+        <div class="cuadro" id="imagenes-cajasorpresa">
+          <p>CajaSorpresa</p>
+        </div>
+        <div class="cuadro" id="imagenes-starwars">
+          <p>StarWars</p>
+        </div>
+      </div>
+      <div class="contenedor-imagenes"></div>
+    </section>
+    <script src="catálogo.js"></script>
+  </body>
+</html>

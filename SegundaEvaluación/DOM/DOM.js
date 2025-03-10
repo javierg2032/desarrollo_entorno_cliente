@@ -86,3 +86,15 @@ function despues() {
   console.log("Terminados los 3000 ms");
 }
 console.log("Hola");
+
+
+/*function verificarTelefono(numeroTelefono) {
+  const telefonoValido1 = /^[9|6|7][0-9]{8}$/; // Comienza por 9, 6 o 7 y tiene 8 dígitos después del primero
+  const telefonoValido2 = /^\+34\s[9|6|7][0-9]{8}$/; // Contiene el prefijo +34 junto con un espacio y comienza por 9, 6 o 7 y tiene 8 dígitos después del primero
+
+  if (telefonoValido1.test(numeroTelefono) || telefonoValido2.test(numeroTelefono)) {
+    return true;
+  } else {
+    return false;
+  }
+}*/

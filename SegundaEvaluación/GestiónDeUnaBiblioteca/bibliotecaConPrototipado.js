@@ -883,21 +883,38 @@ Prestamo.prototype = funcionesPrestamo;
 document
   .getElementById("vista-libros-boton")
   .addEventListener("click", function () {
-    const tbody = document
-      .getElementById("vista-libros")
-      .querySelector("tbody");
-    tbody.innerHTML = "";
+    console.log("Cargando vista de libros...");
+
+    const tabla = document.getElementById("vista-libros");
+    if (!tabla) {
+      console.error("No se encontró la tabla de libros.");
+      return;
+    }
+
+    const tbody = tabla.querySelector("tbody");
+    if (!tbody) {
+      console.error("No se encontró el tbody de libros.");
+      return;
+    }
+
+    tbody.innerHTML = ""; // Limpiar tabla
+
+    if (listaLibros.length === 0) {
+      console.warn("No hay libros en la lista.");
+    }
+
     for (let libro of listaLibros) {
       if (!libro.bajaLibro) {
-        tbody.innerHTML += `
-          <tr>
-            <td>${libro.codLibro}</td>
-            <td>${libro.isbn}</td>
-            <td>${libro.autor}</td>
-            <td>${libro.titulo}</td>
-            <td>${libro.editorial}</td>
-            <td>${libro.ejemplares}</td>
-          </tr>`;
+        let fila = document.createElement("tr");
+        fila.innerHTML = `
+                <td>${libro.codLibro}</td>
+                <td>${libro.isbn}</td>
+                <td>${libro.autor}</td>
+                <td>${libro.titulo}</td>
+                <td>${libro.editorial}</td>
+                <td>${libro.ejemplares}</td>
+            `;
+        tbody.appendChild(fila);
       }
     }
     // Estilos

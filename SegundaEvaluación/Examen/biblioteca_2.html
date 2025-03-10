@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home</title>
+    <style>
+      table,
+      td,
+      th {
+        border-spacing: 0px;
+        border: 1px solid black;
+        margin: 15px 5px 15px 35px;
+      }
+    </style>
+    <style>
+      button {
+        border: 1px solid black;
+        padding: 5px 5px;
+        margin: 5px 5px 5px 15px;
+      }
+    </style>
+    <style>
+      input,
+      p {
+        margin: 3px 0px 3px 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Biblioteca</h1>
+    <p id="cursor-sobre-vista-libros"></p>
+    <p id="propiedades-navegador"></p>
+    <section id="importar">
+      <h2>Importar</h2>
+      <div>
+        <label>Archivo de libros:</label>
+        <input type="file" id="importar-input-libros" />
+      </div>
+      <div>
+        <label>Archivo de lectores:</label>
+        <input type="file" id="importar-input-lectores" />
+      </div>
+      <div>
+        <label>Archivo de prestamos:</label>
+        <input type="file" id="importar-input-prestamos" />
+      </div>
+      <button id="importar-boton">Importar</button>
+    </section>
+    <section id="vista-libros">
+      <h2>Vista Libros</h2>
+      <table id="vista-libros-tabla">
+        <thead>
+          <tr>
+            <th>Código Libro</th>
+            <th>ISBN</th>
+            <th>Autor</th>
+            <th>Título</th>
+            <th>Editorial</th>
+            <th>Ejemplares</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div>
+        <label>Libros que contengan los caracteres: </label>
+        <input
+          type="text"
+          placeholder="Contiene los caracteres ..."
+          id="vista-libros-incluye"
+        />
+      </div>
+      <button id="vista-libros-boton">Actualizar libros</button>
+    </section>
+    <section id="vista-lectores">
+      <h2>Vista lectores</h2>
+      <table id="comprobar-lectores-tabla">
+        <thead>
+          <tr>
+            <th>Nº Socio</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button id="comprobar-lectores-boton">Actualizar lectores</button>
+    </section>
+    <section id="alta-libro">
+      <h2>Alta Libro</h2>
+      <div>
+        <label>ISBN: </label>
+        <input
+          type="text"
+          placeholder="Introduce ISBN ..."
+          id="alta-libro-isbn"
+        />
+      </div>
+      <div>
+        <label>Autor: </label>
+        <input
+          type="text"
+          placeholder="Introduce autor ..."
+          id="alta-libro-autor"
+        />
+      </div>
+      <div>
+        <label>Título: </label>
+        <input
+          type="text"
+          placeholder="Introduce título ..."
+          id="alta-libro-titulo"
+        />
+      </div>
+      <div>
+        <label>Editorial: </label>
+        <input
+          type="text"
+          placeholder="Introduce editorial ..."
+          id="alta-libro-editorial"
+        />
+      </div>
+      <div>
+        <label>Ejemplares: </label>
+        <input
+          type="number"
+          step="1"
+          placeholder="Introduce nº ejemplares ..."
+          id="alta-libro-ejemplares"
+        />
+      </div>
+      <button id="alta-libro-boton">Alta</button>
+    </section>
+    <section id="devolucion-prestamo">
+      <h2>Devolución/Préstamo de libros</h2>
+      <div>
+        <label>Nº de socio: </label>
+        <input
+          type="text"
+          placeholder="Introduce nº socio ..."
+          id="devolucion-prestamo-socio"
+        />
+      </div>
+      <div>
+        <label>Código de libro: </label>
+        <input
+          type="text"
+          placeholder="Introduce código libro ..."
+          id="devolucion-prestamo-libro"
+        />
+      </div>
+      <button id="devolucion-boton">Devolución</button>
+      <button id="prestamo-boton">Préstamo</button>
+    </section>
+    <script src="biblioteca2.js"></script>
+  </body>
+</html>

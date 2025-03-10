@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+	<div class="poner-imagen">
+	</div>
+	</section>
+	<script>
+		const nombreImagen = "images/Asterix.jpg";
+
+		let image_container = document.querySelector('.poner-imagen');
+
+		let imgElem = document.createElement("img");
+			imgElem.setAttribute("src", nombreImagen);
+			imgElem.setAttribute("height", "350");
+			imgElem.setAttribute("width", "350");
+			image_container.append(imgElem);
+	</script>
+</body>
+</html>
