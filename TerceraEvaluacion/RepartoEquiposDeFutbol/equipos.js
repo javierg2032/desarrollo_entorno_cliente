@@ -36,9 +36,12 @@ document
       readerJugadores.onload = function (e) {
         const text = e.target.result;
         processCSV(text);
+        preparaEquipos();
       };
 
       readerJugadores.readAsText(fileJugadores);
+
+      
     }
 
     // Limpio los campos de importación después de importar
@@ -62,8 +65,9 @@ function processCSV(text) {
     jugadoresTotales.push(new Jugador(celda[0], celda[1], celda[2], celda[3]));
   }
   jugadoresTotales.sort((a, b) => a.nombre.localeCompare(b.nombre)); //Ordeno los jugadores por sexo
-  console.table(jugadoresTotales);
+  //console.table(jugadoresTotales);
   jugadoresTotales = eliminaDuplicados();
+  console.log("Listado de jugadores sin duplicados:");
   console.table(jugadoresTotales);
 }
 
@@ -80,21 +84,19 @@ function eliminaDuplicados() {
 
 function preparaEquipos() {
   separaGeneros();
-  console.table(jugadoras);
-  console.table(jugadores);
 
-  while (jugadores.length >= 11) {
-    generaEquipoMasculino();
-  }
+  generaEquipo();
 
-  while (jugadoras.length >= 11) {
-    generaEquipoFemenino();
+  while (jugadores.length >= 11 || jugadoras.length >= 11) {
+    generaEquipo();
   }
 
   restante();
-
+  console.log("Equipo/s Femeninos:");
   console.log(equiposFemeninos);
+  console.log("Equipo/s Masculinos:");
   console.log(equiposMasculinos);
+  console.log("Jugador/es Restante/s:");
   console.log(restantes);
 }
 
@@ -112,40 +114,87 @@ function separaGeneros() {
   }
 }
 
-function generaEquipoFemenino() {
-  let equipo = new Equipo();
-
+function generaEquipo() {
+  let equipoFemenino = new Equipo();
   for (let i = jugadoras.length - 1; i >= 0; i--) {
     //Lo recorro de forma inversa para poder ir eliminando las jugadoras que ya tienen equipo
     let jugadora = jugadoras[i];
 
-    if (jugadora.puesto === "Portero" && equipo.portero.length < 1) {
-      equipo.portero.push(jugadora);
+    if (jugadora.puesto === "Portero" && equipoFemenino.portero.length < 1) {
+      equipoFemenino.portero.push(jugadora);
       jugadoras.splice(i, 1);
-    } else if (jugadora.puesto === "Defensa" && equipo.defensa.length < 4) {
-      equipo.defensa.push(jugadora);
+    } else if (
+      jugadora.puesto === "Defensa" &&
+      equipoFemenino.defensa.length < 4
+    ) {
+      equipoFemenino.defensa.push(jugadora);
       jugadoras.splice(i, 1);
-    } else if (jugadora.puesto === "Centro" && equipo.centro.length < 3) {
-      equipo.centro.push(jugadora);
+    } else if (
+      jugadora.puesto === "Centro" &&
+      equipoFemenino.centro.length < 3
+    ) {
+      equipoFemenino.centro.push(jugadora);
       jugadoras.splice(i, 1);
-    } else if (jugadora.puesto === "Delantero" && equipo.delantero.length < 3) {
-      equipo.delantero.push(jugadora);
+    } else if (
+      jugadora.puesto === "Delantero" &&
+      equipoFemenino.delantero.length < 3
+    ) {
+      equipoFemenino.delantero.push(jugadora);
       jugadoras.splice(i, 1);
     }
 
     if (
-      equipo.portero.length === 1 &&
-      equipo.defensa.length === 4 &&
-      equipo.centro.length === 3 &&
-      equipo.delantero.length === 3
+      equipoFemenino.portero.length === 1 &&
+      equipoFemenino.defensa.length === 4 &&
+      equipoFemenino.centro.length === 3 &&
+      equipoFemenino.delantero.length === 3
     ) {
-      equiposFemeninos.push(equipo);
+      equiposFemeninos.push(equipoFemenino);
       console.log("Equipo femenino completo");
       return;
     }
   }
 
-  console.log("No hay suficientes jugadoras para completar un equipo femenino");
+  let equipoMasculino = new Equipo();
+
+  for (let i = jugadores.length - 1; i >= 0; i--) {
+    //Lo recorro de forma inversa para poder ir eliminando las jugadores que ya tienen equipo
+    let jugador = jugadores[i];
+
+    if (jugador.puesto === "Portero" && equipoMasculino.portero.length < 1) {
+      equipoMasculino.portero.push(jugador);
+      jugadores.splice(i, 1);
+    } else if (
+      jugador.puesto === "Defensa" &&
+      equipoMasculino.defensa.length < 4
+    ) {
+      equipoMasculino.defensa.push(jugador);
+      jugadores.splice(i, 1);
+    } else if (
+      jugador.puesto === "Centro" &&
+      equipoMasculino.centro.length < 3
+    ) {
+      equipoMasculino.centro.push(jugador);
+      jugadores.splice(i, 1);
+    } else if (
+      jugador.puesto === "Delantero" &&
+      equipoMasculino.delantero.length < 3
+    ) {
+      equipoMasculino.delantero.push(jugador);
+      jugadores.splice(i, 1);
+    }
+
+    if (
+      equipoMasculino.portero.length === 1 &&
+      equipoMasculino.defensa.length === 4 &&
+      equipoMasculino.centro.length === 3 &&
+      equipoMasculino.delantero.length === 3
+    ) {
+      equiposMasculinos.push(equipoMasculino);
+      console.log("Equipo masculino completo");
+      return;
+    }
+  }
 }
 
 function restante() {
@@ -158,42 +207,4 @@ function restante() {
     let jugador = jugadores[i];
     restantes.push(jugador);
   }
-}
-
-function generaEquipoMasculino() {
-  let equipo = new Equipo();
-
-  for (let i = jugadores.length - 1; i >= 0; i--) {
-    //Lo recorro de forma inversa para poder ir eliminando las jugadores que ya tienen equipo
-    let jugador = jugadores[i];
-
-    if (jugador.puesto === "Portero" && equipo.portero.length < 1) {
-      equipo.portero.push(jugador);
-      jugadores.splice(i, 1);
-    } else if (jugador.puesto === "Defensa" && equipo.defensa.length < 4) {
-      equipo.defensa.push(jugador);
-      jugadores.splice(i, 1);
-    } else if (jugador.puesto === "Centro" && equipo.centro.length < 3) {
-      equipo.centro.push(jugador);
-      jugadores.splice(i, 1);
-    } else if (jugador.puesto === "Delantero" && equipo.delantero.length < 3) {
-      equipo.delantero.push(jugador);
-      jugadores.splice(i, 1);
-    }
-
-    if (
-      equipo.portero.length === 1 &&
-      equipo.defensa.length === 4 &&
-      equipo.centro.length === 3 &&
-      equipo.delantero.length === 3
-    ) {
-      equiposMasculinos.push(equipo);
-      console.log("Equipo masculino completo");
-      return;
-    }
-  }
-
-  console.log(
-    "No hay suficientes jugadores para completar un equipo masculino"
-  );
 }
