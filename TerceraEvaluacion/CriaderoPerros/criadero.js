@@ -1,12 +1,28 @@
 let listadoPerros = [];
 let tablaPerros = [];
 
-function Perro(nombre, padre, madre, hijos = [], hermanos = []) {
+function Perro(
+  nombre,
+  padre,
+  madre,
+  hijos = [],
+  hermanos = [],
+  abueloPaterno,
+  abueloMaterno,
+  abuelaPaterna,
+  abuelaMaterna,
+  sexo
+) {
   this.nombre = nombre;
+  this.sexo = sexo;
   this.padre = padre;
   this.madre = madre;
   this.hijos = hijos;
   this.hermanos = hermanos;
+  this.abueloPaterno = abueloPaterno;
+  this.abuelaPaterna = abuelaPaterna;
+  this.abueloMaterno = abueloMaterno;
+  this.abuelaMaterna = abuelaMaterna;
 }
 
 document
@@ -55,14 +71,9 @@ function processCSV(text) {
       }
     }
   }
-  //listadoPerros.sort((a, b) => a.nombre.localeCompare(b.nombre)); //Ordeno los jugadores por sexo
-  /* console.log("Tabla criadero:");
-  console.table(tablaPerros);
-  console.log("Listado de perros:");
-  console.table(listadoPerros);
+  listadoPerros.sort((a, b) => a.nombre.localeCompare(b.nombre)); //Ordeno los perros alfabeticamente
+
   listadoPerros = eliminaDuplicados();
-  console.log("Listado de perros sin duplicados:");
-  console.table(listadoPerros);*/
 }
 
 function eliminaDuplicados() {
@@ -80,10 +91,19 @@ function completaInfoPerros() {
   for (let i = 0; i < listadoPerros.length; i++) {
     asignaPadres(listadoPerros[i]);
     asignaHijos(listadoPerros[i]);
-    console.log(listadoPerros[i]);
+    asignaHermanos(listadoPerros[i]);
+    asignaAbuelos(listadoPerros[i]);
+    asignaSexo(listadoPerros[i]);
   }
-  /*console.log("Información de los perros");
-  console.log(listadoPerros);*/
+  console.table(listadoPerros);
+}
+
+function asignaSexo(perro) {
+  let sexo = null;
+  sexo = prompt("Cual es el sexo de: " + perro.nombre).toLowerCase();
+  if (sexo == "m" || sexo == "f") {
+    perro.sexo = sexo;
+  }
 }
 
 function asignaPadres(perro) {
@@ -101,6 +121,42 @@ function asignaPadres(perro) {
         perro.padre = padrePerro;
         perro.madre = madrePerro;
         return;
+      }
+    }
+  }
+}
+
+function asignaAbuelos(perro) {
+  // Abuelos paternos
+  if (perro.padre) {
+    for (let i = 0; i < tablaPerros.length; i++) {
+      for (let j = 2; j < tablaPerros[i].length; j++) {
+        if (tablaPerros[i][j] == perro.padre) {
+          if (tablaPerros[i][0] != "") {
+            perro.abueloPaterno = tablaPerros[i][0];
+          }
+          if (tablaPerros[i][1] != "") {
+            perro.abuelaPaterna = tablaPerros[i][1];
+          }
+          break;
+        }
+      }
+    }
+  }
+
+  // Abuelos maternos
+  if (perro.madre) {
+    for (let i = 0; i < tablaPerros.length; i++) {
+      for (let j = 2; j < tablaPerros[i].length; j++) {
+        if (tablaPerros[i][j] == perro.madre) {
+          if (tablaPerros[i][0] != "") {
+            perro.abueloMaterno = tablaPerros[i][0];
+          }
+          if (tablaPerros[i][1] != "") {
+            perro.abuelaMaterna = tablaPerros[i][1];
+          }
+          break;
+        }
       }
     }
   }
@@ -124,15 +180,22 @@ function asignaHijos(perro) {
   }
 }
 
-//CORREGIR FUNCIÓN ASIGNAHERMANOS
 function asignaHermanos(perro) {
+  let hermanoPerro = null;
   for (let i = 0; i < tablaPerros.length; i++) {
-    for (let j = 2; j < tablaPerros[i].length; j++) {
-      if (perro.nombre == tablaPerros[i][j]) {
-        for (let k = 2; k < tablaPerros[i].length; k++) {
-          if (tablaPerros[i][k] !== "" && tablaPerros[i][k] !== perro.nombre) {
-            perro.hermanos.push(tablaPerros[i][k]);
+    if (
+      perro.nombre != tablaPerros[i][0] &&
+      perro.nombre != tablaPerros[i][1]
+    ) {
+      for (let j = 2; j < tablaPerros[i].length; j++) {
+        if (perro.nombre == tablaPerros[i][j]) {
+          for (let k = 2; k < tablaPerros[i].length; k++) {
+            if (perro.nombre != tablaPerros[i][k] && tablaPerros[i][k] != "") {
+              hermanoPerro = tablaPerros[i][k];
+              perro.hermanos.push(hermanoPerro);
+            }
           }
+          return;
         }
       }
     }
