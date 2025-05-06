@@ -74,6 +74,7 @@ function processCSV(text) {
   listadoPerros.sort((a, b) => a.nombre.localeCompare(b.nombre)); //Ordeno los perros alfabeticamente
 
   listadoPerros = eliminaDuplicados();
+  completaInfoPerros();
 }
 
 function eliminaDuplicados() {
@@ -99,10 +100,16 @@ function completaInfoPerros() {
 }
 
 function asignaSexo(perro) {
-  let sexo = null;
+  /*let sexo = null;
   sexo = prompt("Cual es el sexo de: " + perro.nombre).toLowerCase();
   if (sexo == "m" || sexo == "f") {
     perro.sexo = sexo;
+  }*/
+  num = Math.floor(Math.random() * 2);
+  if (num == 0) {
+    perro.sexo = "m";
+  } else {
+    perro.sexo = "f";
   }
 }
 
@@ -200,4 +207,113 @@ function asignaHermanos(perro) {
       }
     }
   }
+}
+
+function preguntaFamilia(nombre) {
+  let nombrePerro = nombre.toLowerCase();
+  for (let i = 0; i < listadoPerros.length; i++) {
+    if (listadoPerros[i].nombre.toLowerCase() == nombrePerro) {
+      console.log(listadoPerros[i]);
+      break;
+    }
+  }
+}
+
+function cruzaPerros() {
+  let numeroCruces = Math.floor(Math.random() * 8) + 1;
+  let listadoCruces = [];
+  let perro1 = null;
+  let perro2 = null;
+
+  console.log("El numero de cruces a realizar es: " + numeroCruces);
+
+  for (let i = 0; i < numeroCruces; i++) {
+    let disponible1 = false;
+    let disponible2 = false;
+
+    do {
+      disponible1 = true;
+      perro1 = Math.floor(Math.random() * listadoPerros.length);
+      for (let j = 0; j < listadoCruces.length; j++) {
+        if (
+          listadoCruces[j].nombre1 === listadoPerros[perro1].nombre ||
+          listadoCruces[j].nombre2 === listadoPerros[perro1].nombre
+        ) {
+          disponible1 = false;
+          break;
+        }
+      }
+    } while (!disponible1);
+
+    do {
+      disponible2 = true;
+      perro2 = Math.floor(Math.random() * listadoPerros.length);
+      for (let j = 0; j < listadoCruces.length; j++) {
+        if (
+          listadoCruces[j].nombre1 === listadoPerros[perro2].nombre ||
+          listadoCruces[j].nombre2 === listadoPerros[perro2].nombre
+        ) {
+          disponible2 = false;
+          break;
+        }
+      }
+    } while (!disponible2);
+
+    if (validaSexos(listadoPerros[perro1], listadoPerros[perro2])) {
+      if (listadoPerros[perro1].sexo === "m") {
+        listadoCruces.push({
+          padre: listadoPerros[perro1].nombre,
+          madre: listadoPerros[perro2].nombre,
+          cachorros: [],
+        });
+      } else {
+        if (listadoPerros[perro1].sexo === "f") {
+          listadoCruces.push({
+            padre: listadoPerros[perro2].nombre,
+            madre: listadoPerros[perro1].nombre,
+            cachorros: [],
+          });
+        }
+      }
+    } else {
+      i--;
+    }
+  }
+
+  listadoCruces.forEach((cruce, index) => {
+    let cachorros = generaCachorros(cruce.padre, cruce.madre);
+    listadoCruces[index].cachorros = cachorros;
+  });
+
+  console.log("Cruces realizados: " + listadoCruces.length);
+
+  return listadoCruces;
+}
+
+function validaSexos(perro1, perro2) {
+  if (perro1.sexo != perro2.sexo) {
+    return true;
+  } else return false;
+}
+
+function generaCachorros(padre, madre) {
+  let numeroCachorros = Math.floor(Math.random() * 5) + 1;
+  let listadoCachorros = [];
+  let sexo = "m";
+  for (let i = 0; i < numeroCachorros; i++) {
+    let num = Math.floor(Math.random() * 2);
+    if (num != 0) {
+      sexo = "f";
+    }
+
+    listadoCachorros.push(
+      new Perro({
+        nombre: i,
+        padre: padre,
+        madre: madre,
+        sexo: sexo,
+      })
+    );
+  }
+  return listadoCachorros;
 }
