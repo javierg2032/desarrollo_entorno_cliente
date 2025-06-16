@@ -32,39 +32,36 @@ function ArticuloStarWars(protagonista) {
 }
 
 // Prototipados
-ArticuloAsterix.prototype = Articulo;
-ArticuloCajaSorpresa.prototype = Articulo;
-ArticuloStarWars.prototype = Articulo;
+ArticuloAsterix.prototype = new Articulo();
+ArticuloCajaSorpresa.prototype = new Articulo();
+ArticuloStarWars.prototype = new Articulo();
 
 //VERIFICACIONES
 function verificaSku(sku) {
-  const skuValido3dig = /^[A-Z^Ñ]{3}[0-9]{3}?$/;
-  const skuValido4dig = /^[A-Z^Ñ]{3}[0-9]{4}?$/;
+  const skuValido3dig = /^[A-ZÑ]{3}[0-9]{3}$/;
+  const skuValido4dig = /^[A-ZÑ]{3}[0-9]{4}$/;
   if (skuValido3dig.test(sku) || skuValido4dig.test(sku)) {
     return true;
   } else return false;
 }
 
 function verificaNombreArticulo(nombreArticulo) {
-  const nombreArticuloValido = /^[a-zA-Z0-9\s\-^Ñ]+$/;
+  const nombreArticuloValido = /^[a-zA-Z0-9\s\-Ññ]+$/;
   return nombreArticuloValido.test(nombreArticulo);
 }
 
 function verificaPrecioNumArticulos(numero) {
-  if (typeof numero === "number") {
-    if (numero > 0) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  return typeof numero === "number" && numero > 0;
 }
 
 function verificaTipoObjetoTematicaProtagonista(tipoObjeto) {
-  const formatoValido = /^[a-zA-Z0-9^Ñ]?$/;
+  //const formatoValido = /^[a-zA-Z0-9]?$/; // '?' hace que solo pueda coincidir si tiene 0 o 1 caracter;
+  const formatoValido = /^[a-zA-Z0-9ñÑ]+$/; // '+' hace que deba coincidir una o más veces el patón (pero nunca 0);
+  //Para que la Ñ sea válida se debe poner de esta forma: /^[a-zA-Z0-9ñÑ]+$/
   return formatoValido.test(tipoObjeto);
 }
 
+//IMPORTACIÓN ARCHIVOS
 document
   .getElementById("importar-boton")
   .addEventListener("click", function importar() {
@@ -130,7 +127,7 @@ document
         errorOImportacionExitosa = true;
         mostrarMensajeError("Error al leer el archivo de starWars.");
       };
-      readerStarWars.readAsText(fileCajaSorpresa);
+      readerStarWars.readAsText(fileStarWars);
     }
 
     // Limpio los campos de importación después de importar
@@ -166,7 +163,7 @@ document
     }*/
   });
 
-// Procesar CSV
+// PROCESAMIENTO CSV
 function processCSV(text, tipoFichero) {
   const fichero = text
     .split("\r\n") // Divido en líneas
@@ -242,13 +239,94 @@ function processCSV(text, tipoFichero) {
   }
 }
 
+//VISTA ARTICULOS (MOSTRAR ARRAYS EN LA TABLA DE ARTICULOS)
+
+document.addEventListener("keydown", function (evento) {
+  if (evento.key == "$") {
+    vistaArticulos();
+  }
+});
+
+function vistaArticulos() {
+  const tbody = document.querySelector("#vista-articulos-tabla tbody");
+  tbody.innerHTML = ""; // Vacía la tabla
+
+  const todosLosArticulos = [
+    ...arrayArticuloAsterix.map((articulo) => ({
+      tipo: "Asterix",
+      ...articulo,
+    })),
+    ...arrayArticuloCajaSorpresa.map((articulo) => ({
+      tipo: "CajaSorpresa",
+      ...articulo,
+    })),
+    ...arrayArticuloStarWars.map((articulo) => ({
+      tipo: "StarWars",
+      ...articulo,
+    })),
+  ];
+
+  for (let articulo of todosLosArticulos) {
+    const filaTabla = document.createElement("tr");
+
+    // Extraer campo específico
+    let campoEspecifico = "";
+    if (articulo.tipo === "Asterix") campoEspecifico = articulo.tipoObjeto;
+    else if (articulo.tipo === "CajaSorpresa")
+      campoEspecifico = articulo.tematica;
+    else if (articulo.tipo === "StarWars")
+      campoEspecifico = articulo.protagonista;
+
+    const columnasTabla = [
+      { valor: articulo.tipo, valido: true },
+      {
+        valor: campoEspecifico,
+        valido: verificaTipoObjetoTematicaProtagonista(campoEspecifico),
+      },
+      {
+        valor: articulo.nombre,
+        valido: verificaNombreArticulo(articulo.nombre),
+      },
+      {
+        valor: parseFloat(articulo.precio).toFixed(2),
+        valido: verificaPrecioNumArticulos(articulo.precio),
+      },
+      {
+        valor: articulo.numArticulos,
+        valido: verificaPrecioNumArticulos(articulo.numArticulos),
+      },
+    ];
+
+    for (let columna of columnasTabla) {
+      const celda = document.createElement("td");
+      celda.textContent = columna.valor;
+      celda.style.backgroundColor = columna.valido ? "#F0E97A" : "#EF6902";
+      filaTabla.appendChild(celda);
+    }
+
+    tbody.appendChild(filaTabla);
+  }
+
+  return 0;
+}
+
 //Alta nuevo articulo
 
 document
   .getElementById("alta-articulo-boton")
   .addEventListener("click", function () {
- 
+    const boton = this;
 
+    // Busco si ya existe el párrafo de mensaje después del botón
+    let mensajeElemento = boton.nextElementSibling;
+    if (!mensajeElemento || mensajeElemento.tagName.toLowerCase() !== "p") {
+      // Si no existe, lo creo y lo inserto justo después del botón
+      mensajeElemento = document.createElement("p");
+      boton.parentNode.insertBefore(mensajeElemento, boton.nextSibling);
+    }
+
+    // Borro mensaje anterior
+    mensajeElemento.textContent = "";
 
     let tipo = document.getElementById("alta-articulo-tipo").value;
     let especifico = document.getElementById("alta-articulo-especifico").value;
@@ -259,128 +337,216 @@ document
     let imagen = document.getElementById("alta-articulo-imagen").value;
 
     try {
-      altaArticulo(tipo, especifico, sku, nombre, precio, numero, imagen);
-   
-      // Limpio los campos del formulario
-      document.getElementById("alta-articulo-tipo").value = "";
-      document.getElementById("alta-articulo-especifico").value = "";
-      document.getElementById("alta-articulo-sku").value = "";
-      document.getElementById("alta-articulo-nombre").value = "";
-      document.getElementById("alta-articulo-precio").value = "";
-      document.getElementById("alta-articulo-numero").value = "";
-      document.getElementById("alta-articulo-imagen").value = "";
+      let resultado = altaArticulo(
+        tipo,
+        especifico,
+        sku,
+        nombre,
+        precio,
+        numero,
+        imagen
+      );
+
+      switch (resultado) {
+        case 0:
+          mensajeElemento.textContent = "Alta realizada correctamente";
+          // Limpio campos
+          document.getElementById("alta-articulo-tipo").value = "";
+          document.getElementById("alta-articulo-especifico").value = "";
+          document.getElementById("alta-articulo-sku").value = "";
+          document.getElementById("alta-articulo-nombre").value = "";
+          document.getElementById("alta-articulo-precio").value = "";
+          document.getElementById("alta-articulo-numero").value = "";
+          document.getElementById("alta-articulo-imagen").value = "";
+          break;
+        case -1:
+          mensajeElemento.textContent = "Faltan argumentos";
+          break;
+        case -2:
+          mensajeElemento.textContent = "Argumento con formato incorrecto";
+          break;
+        case -3:
+          mensajeElemento.textContent = "El tipo de artículo no es válido";
+          break;
+        default:
+          mensajeElemento.textContent =
+            "Error desconocido al añadir el artículo";
+      }
     } catch (error) {
-      
+      console.error("Error inesperado:", error);
+      mensajeElemento.textContent =
+        "Ocurrió un error inesperado. Por favor, inténtelo de nuevo.";
     }
   });
 
 function altaArticulo(tipo, especifico, sku, nombre, precio, numero, imagen) {
-  let tipoArticulo = tipo;
-  let newEspecifico = especifico;
-  let newSku = sku;
-  let newNombreArticulo = nombre;
-  let newPrecio = precio;
+  let tipoArticulo = tipo.trim();
+  let newEspecifico = especifico.trim();
+  let newSku = sku.trim();
+  let newNombreArticulo = nombre.trim();
+  let newPrecioStr = precio.trim();
   let newNumArticulos = parseInt(numero);
-  let newImagen = imagen;
+  let newImagen = imagen.trim();
 
-  // Verifico que ninguno de los datos esté vacío
+  // 1. Verificar que no haya campos vacíos y que el número sea válido
   if (
-    tipoArticulo != "" &&
-    newEspecifico != "" &&
-    newSku != "" &&
-    newNombreArticulo != "" &&
-    newPrecio != "" &&
-    newNumArticulos != "" &&
-    newImagen != ""
+    !tipoArticulo ||
+    !newEspecifico ||
+    !newSku ||
+    !newNombreArticulo ||
+    !newPrecioStr ||
+    isNaN(newNumArticulos) ||
+    newNumArticulos <= 0 ||
+    !newImagen
   ) {
-    // Verifico el formato de cada dato
-    if (
-      verificaSku(newSku) &&
-      verificaNombreArticulo(newNombreArticulo) &&
-      verificaPrecioNumArticulos(newPrecio) &&
-      verificaPrecioNumArticulos(newNumArticulos) &&
-      verificaTipoObjetoTematicaProtagonista(tipoArticulo)
-    ) {
-      if (tipoArticulo === "Asterix") {
-        let existe = arrayArticuloAsterix.some(
-          (articulo) => articulo.sku === sku
-        ); // Uso some() para verificar si ya hay un articulo con el mismo sku
-
-        if (!existe) {
-          if (!existe) {
-            arrayArticuloAsterix.push(new ArticuloAsterix(newEspecifico));
-            arrayArticuloAsterix[arrayArticuloAsterix.length - 1].sku = newSku;
-            arrayArticuloAsterix[arrayArticuloAsterix.length - 1].nombre =
-              newNombreArticulo;
-
-            arrayArticuloAsterix[arrayArticuloAsterix.length - 1].precio =
-              parseInt(newPrecio);
-            arrayArticuloAsterix[arrayArticuloAsterix.length - 1].numArticulos =
-              parseInt(newNumArticulos);
-            arrayArticuloAsterix[arrayArticuloAsterix.length - 1].imagen =
-              newImagen;
-            return 0;
-          }
-        } else {
-          if (tipoArticulo === "CajaSorpresa") {
-            let existe = arrayArticuloCajaSorpresa.some(
-              (articulo) => articulo.sku === sku
-            ); // Uso some() para verificar si ya hay un articulo con el mismo sku
-
-            if (!existe) {
-              arrayArticuloCajaSorpresa.push(
-                new ArticuloCajaSorpresa(newEspecifico)
-              );
-              arrayArticuloCajaSorpresa[
-                arrayArticuloCajaSorpresa.length - 1
-              ].sku = newSku;
-              arrayArticuloCajaSorpresa[
-                arrayArticuloCajaSorpresa.length - 1
-              ].nombre = newNombreArticulo;
-
-              arrayArticuloCajaSorpresa[
-                arrayArticuloCajaSorpresa.length - 1
-              ].precio = parseInt(newPrecio);
-              arrayArticuloCajaSorpresa[
-                arrayArticuloCajaSorpresa.length - 1
-              ].numArticulos = parseInt(newNumArticulos);
-              arrayArticuloCajaSorpresa[
-                arrayArticuloCajaSorpresa.length - 1
-              ].imagen = newImagen;
-              return 0;
-            }
-          } else {
-            if (tipoArticulo === "StarWars") {
-              let existe = arrayArticuloStarWars.some(
-                (articulo) => articulo.sku === sku
-              ); // Uso some() para verificar si ya hay un articulo con el mismo sku
-
-              if (!existe) {
-                arrayArticuloStarWars.push(new ArticuloStarWars(newEspecifico));
-                arrayArticuloStarWars[arrayArticuloStarWars.length - 1].sku =
-                  newSku;
-                arrayArticuloStarWars[arrayArticuloStarWars.length - 1].nombre =
-                  newNombreArticulo;
-
-                arrayArticuloStarWars[arrayArticuloStarWars.length - 1].precio =
-                  parseInt(newPrecio);
-                arrayArticuloStarWars[
-                  arrayArticuloStarWars.length - 1
-                ].numArticulos = parseInt(newNumArticulos);
-                arrayArticuloStarWars[arrayArticuloStarWars.length - 1].imagen =
-                  newImagen;
-                return 0;
-              }
-            } else {
-              return -3;
-            }
-          }
-        }
-      } else {
-        return -2; // Muestro un mensaje de error si algún dato tiene un formato inválido
-      }
-    } else {
-      return -1;
-    }
+    return -1; // Faltan argumentos
   }
+
+  // 2. Verificar formato de los datos
+  const newPrecio = parseFloat(newPrecioStr);
+  if (
+    !verificaSku(newSku) ||
+    !verificaNombreArticulo(newNombreArticulo) ||
+    !verificaTipoObjetoTematicaProtagonista(tipoArticulo) ||
+    !verificaTipoObjetoTematicaProtagonista(newEspecifico) ||
+    isNaN(newPrecio) ||
+    newPrecio <= 0
+  ) {
+    return -2; // Formato incorrecto
+  }
+
+  // 3. Comprobar que tipo de artículo es válido
+  if (
+    tipoArticulo !== "Asterix" &&
+    tipoArticulo !== "CajaSorpresa" &&
+    tipoArticulo !== "StarWars"
+  ) {
+    return -3; // Tipo artículo inválido
+  }
+
+  // 4. Comprobar si el SKU ya existe en cualquiera de los arrays
+  const skuExiste =
+    arrayArticuloAsterix.some((art) => art.sku === newSku) ||
+    arrayArticuloCajaSorpresa.some((art) => art.sku === newSku) ||
+    arrayArticuloStarWars.some((art) => art.sku === newSku);
+
+  if (skuExiste) {
+    return -2; // Rúbrica no contempla otro código, así que -2 para formato incorrecto
+  }
+
+  // 5. Añadir el artículo al array correspondiente
+  if (tipoArticulo === "Asterix") {
+    let nuevoArticulo = new ArticuloAsterix(newEspecifico);
+    nuevoArticulo.sku = newSku;
+    nuevoArticulo.nombre = newNombreArticulo;
+    nuevoArticulo.precio = newPrecio;
+    nuevoArticulo.numArticulos = newNumArticulos;
+    nuevoArticulo.imagen = newImagen;
+    arrayArticuloAsterix.push(nuevoArticulo);
+  } else if (tipoArticulo === "CajaSorpresa") {
+    let nuevoArticulo = new ArticuloCajaSorpresa(newEspecifico);
+    nuevoArticulo.sku = newSku;
+    nuevoArticulo.nombre = newNombreArticulo;
+    nuevoArticulo.precio = newPrecio;
+    nuevoArticulo.numArticulos = newNumArticulos;
+    nuevoArticulo.imagen = newImagen;
+    arrayArticuloCajaSorpresa.push(nuevoArticulo);
+  } else if (tipoArticulo === "StarWars") {
+    let nuevoArticulo = new ArticuloStarWars(newEspecifico);
+    nuevoArticulo.sku = newSku;
+    nuevoArticulo.nombre = newNombreArticulo;
+    nuevoArticulo.precio = newPrecio;
+    nuevoArticulo.numArticulos = newNumArticulos;
+    nuevoArticulo.imagen = newImagen;
+    arrayArticuloStarWars.push(nuevoArticulo);
+  }
+
+  // 6. Alta realizada correctamente
+  return 0;
 }
+
+//AÑADIR UNIDADES
+function anadirUnidades(sku, num) {
+  const skuTrim = sku.trim();
+  const unidades = parseInt(num);
+
+  // Comprobar que unidades > 0
+  if (isNaN(unidades) || unidades <= 0) {
+    return -2; // Número de artículos < 0 o inválido
+  }
+
+  // Buscar el artículo en los tres arrays
+  let articulo = arrayArticuloAsterix.find((art) => art.sku === skuTrim);
+  if (!articulo)
+    articulo = arrayArticuloCajaSorpresa.find((art) => art.sku === skuTrim);
+  if (!articulo)
+    articulo = arrayArticuloStarWars.find((art) => art.sku === skuTrim);
+
+  // Si no existe el sku
+  if (!articulo) {
+    return -1; // No existe el SKU introducido
+  }
+
+  // Añadir unidades al numArticulos
+  articulo.numArticulos += unidades;
+
+  return 0; // Unidades añadidas correctamente
+}
+
+//MOSTRAR IMAGENES
+
+function verImagenes(tipoArticulo) {
+  return new Promise((resolve) => {
+    const contenedor = document.querySelector('.contenedor-imagenes');
+    contenedor.innerHTML = ''; // Limpiar imágenes previas
+
+    let arrayArticulos;
+
+    switch (tipoArticulo) {
+      case 'Asterix':
+        arrayArticulos = arrayArticuloAsterix;
+        break;
+      case 'CajaSorpresa':
+        arrayArticulos = arrayArticuloCajaSorpresa;
+        break;
+      case 'StarWars':
+        arrayArticulos = arrayArticuloStarWars;
+        break;
+      default:
+        arrayArticulos = [];
+    }
+
+    // Crear promesas para cada imagen
+    const promesasImagenes = arrayArticulos.map(articulo => {
+      return new Promise((resolveImg) => {
+        const img = document.createElement('img');
+        img.src = `images/${articulo.imagen}`;
+        img.width = 200;
+        img.height = 200;
+        img.alt = articulo.nombre;
+        img.onload = () => resolveImg(img);
+        img.onerror = () => resolveImg(null); // Ignorar imágenes que fallen
+      });
+    });
+
+    // Cuando todas las imágenes se hayan cargado, las añadimos
+    Promise.all(promesasImagenes).then(imgs => {
+      imgs.forEach(img => {
+        if (img) contenedor.appendChild(img);
+      });
+      resolve(); // Finalizado
+    });
+  });
+}
+
+document.getElementById('imagenes-asterix').addEventListener('mouseenter', () => {
+  verImagenes('Asterix');
+});
+
+document.getElementById('imagenes-cajasorpresa').addEventListener('mouseenter', () => {
+  verImagenes('CajaSorpresa');
+});
+
+document.getElementById('imagenes-starwars').addEventListener('mouseenter', () => {
+  verImagenes('StarWars');
+});
