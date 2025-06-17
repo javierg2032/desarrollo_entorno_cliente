@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Home</title>
+	<style>
+		table, td, th {
+			border-spacing: 0px;
+			border: 1px solid black;
+			margin: 15px 5px 15px 35px;
+		}
+	</style>
+	<style>
+		button {
+			border: 1px solid black;
+			padding: 5px 5px;
+			margin: 5px 5px 5px 15px;
+		}
+	</style>
+	<style>
+		input, p {
+			margin: 3px 0px 3px 5px;
+		}
+	</style>
+	<style>
+		.contenedor-cuadros {
+			display: flex;
+			flex-direction: row;
+		}
+		.cuadro {
+			width: 150px;
+			height: 100px;
+			border: 1px solid black;
+			margin: 10px;
+			padding: 5px;
+			align-content: center;
+			text-align: center;
+			background-color: lightgray;
+			float: left;
+			/* display: flex;
+			flex-direction: row; */
+		}
+	</style>
+	<style>
+		.contenedor-imagenes {
+		  display: flex;
+		  flex-direction: row;
+		  width: 100%;
+		  flex-wrap: wrap;
+		  gap: 10px;
+		  padding: 10px;
+		}
+		.contenedor-imagenes > div {
+		  background-color: #f1f1f1;
+		  border: 1px solid black;
+		  padding: 10px;
+		  font-size: 30px;
+		  text-align: center;
+		}
+		#imagenes {
+			display: flex;
+			flex-direction: column;
+		}
+		</style>
+</head>
+<body>
+	<h1>TIENDA DE PLANTAS</h1>
+	<section id="importar">
+		<h2>Importar</h2>
+		<div>
+			<label>Archivo con listado de plantas:</label>
+			<input type="file" id="importar-input-plantas">
+		</div>
+		<div>
+			<label>Archivo con listado de clientes:</label>
+			<input type="file" id="importar-input-clientes">
+		</div>
+		<div>
+			<label>Archivo con listado de ventas:</label>
+			<input type="file" id="importar-input-ventas">
+		</div>
+		<button id="importar-button">Importar</button>
+	</section>
+	<section id="listado-clientes">
+		<h2>Listado de clientes</h2>
+		<button id="listado-clientes-button">Generar listado de clientes</button>
+		<table id="listado-clientes-tabla">
+			<thead>
+				<tr>
+					<th>ID de cliente</th>
+					<th>Nombre</th>
+					<th>Apellido</th>
+					<th>Teléfono</th>
+					<th>Código tarjeta cliente</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+	</section>
+	<section id="mostrar-venta">
+		<h2>Mostrar datos de venta</h2>
+		<div>
+			<label>Introducir ID de venta: </label>
+			<input type="text" placeholder="ID de venta" id="mostrar-venta-id">
+		</div>
+			<button id="mostrar-venta-button">Mostrar venta</button>
+		<table id="mostrar-venta-tabla-base">
+			<thead>
+				<tr>
+					<th>Nombre cliente</th>
+					<th>Apellido cliente</th>
+					<th>Teléfono</th>
+					<th>Unidades totales</th>
+					<th>Días fecha venta hasta hoy</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+		<table id="mostrar-venta-tabla-detalle">
+			<thead>
+				<tr>
+					<th>Nombre Planta</th>
+					<th>Número de unidades</th>
+					<th>Precio por unidad</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+	</section>
+	<script src="tiendaPlantas.js"></script>
+</body>
+</html>

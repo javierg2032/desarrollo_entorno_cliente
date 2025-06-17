@@ -165,6 +165,7 @@ document
 
 // PROCESAMIENTO CSV
 function processCSV(text, tipoFichero) {
+  console.log(text);
   const fichero = text
     .split("\r\n") // Divido en líneas
     .slice(1) // Elimino la primera línea (encabezado)
@@ -177,7 +178,7 @@ function processCSV(text, tipoFichero) {
       // Divido las lineas en celdas y convierto en array las filas
       return linea.map((celda) => celda.split(":")).flat();*/
     });
-
+  console.log(fichero);
   fichero.pop(); // Elimino la ultima linea vacia
 
   if (tipoFichero === "asterix") {
@@ -497,19 +498,19 @@ function anadirUnidades(sku, num) {
 
 function verImagenes(tipoArticulo) {
   return new Promise((resolve) => {
-    const contenedor = document.querySelector('.contenedor-imagenes');
-    contenedor.innerHTML = ''; // Limpiar imágenes previas
+    const contenedor = document.querySelector(".contenedor-imagenes");
+    contenedor.innerHTML = ""; // Limpiar imágenes previas
 
     let arrayArticulos;
 
     switch (tipoArticulo) {
-      case 'Asterix':
+      case "Asterix":
         arrayArticulos = arrayArticuloAsterix;
         break;
-      case 'CajaSorpresa':
+      case "CajaSorpresa":
         arrayArticulos = arrayArticuloCajaSorpresa;
         break;
-      case 'StarWars':
+      case "StarWars":
         arrayArticulos = arrayArticuloStarWars;
         break;
       default:
@@ -517,9 +518,9 @@ function verImagenes(tipoArticulo) {
     }
 
     // Crear promesas para cada imagen
-    const promesasImagenes = arrayArticulos.map(articulo => {
+    const promesasImagenes = arrayArticulos.map((articulo) => {
       return new Promise((resolveImg) => {
-        const img = document.createElement('img');
+        const img = document.createElement("img");
         img.src = `images/${articulo.imagen}`;
         img.width = 200;
         img.height = 200;
@@ -530,8 +531,8 @@ function verImagenes(tipoArticulo) {
     });
 
     // Cuando todas las imágenes se hayan cargado, las añadimos
-    Promise.all(promesasImagenes).then(imgs => {
-      imgs.forEach(img => {
+    Promise.all(promesasImagenes).then((imgs) => {
+      imgs.forEach((img) => {
         if (img) contenedor.appendChild(img);
       });
       resolve(); // Finalizado
@@ -539,14 +540,20 @@ function verImagenes(tipoArticulo) {
   });
 }
 
-document.getElementById('imagenes-asterix').addEventListener('mouseenter', () => {
-  verImagenes('Asterix');
-});
+document
+  .getElementById("imagenes-asterix")
+  .addEventListener("mouseenter", () => {
+    verImagenes("Asterix");
+  });
 
-document.getElementById('imagenes-cajasorpresa').addEventListener('mouseenter', () => {
-  verImagenes('CajaSorpresa');
-});
+document
+  .getElementById("imagenes-cajasorpresa")
+  .addEventListener("mouseenter", () => {
+    verImagenes("CajaSorpresa");
+  });
 
-document.getElementById('imagenes-starwars').addEventListener('mouseenter', () => {
-  verImagenes('StarWars');
-});
+document
+  .getElementById("imagenes-starwars")
+  .addEventListener("mouseenter", () => {
+    verImagenes("StarWars");
+  });

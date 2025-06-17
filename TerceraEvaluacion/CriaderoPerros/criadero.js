@@ -317,3 +317,7 @@ function generaCachorros(padre, madre) {
   }
   return listadoCachorros;
 }
+
+function compruebaLazos(perro1,perro2){
+
+}
